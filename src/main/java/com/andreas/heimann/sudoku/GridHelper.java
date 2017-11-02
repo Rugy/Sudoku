@@ -25,7 +25,7 @@ public class GridHelper {
 
 			for (int i = 0; i < 9; i++) {
 				for (int j = 0; j < 9; j++) {
-					arrayGrid[i][j] = new Cell(0, i + 1, j + 1);
+					arrayGrid[i][j] = new Cell(0, i, j);
 				}
 			}
 
@@ -129,8 +129,8 @@ public class GridHelper {
 			for (int j = 0; j < FIELDSIZE; j++) {
 				int offsetA = 0;
 				int offsetB = 0;
-				int row = i + 1;
-				int column = j + 1;
+				int row = i;
+				int column = j;
 
 				if (i % 3 == 1) {
 					offsetA = 3;
@@ -157,7 +157,7 @@ public class GridHelper {
 	public static void generateEmptyGrid(SudokuGrid sudokuGrid) {
 		for (int i = 0; i < 9; i++) {
 			for (int j = 0; j < 9; j++) {
-				sudokuGrid.getArrayGrid()[i][j] = new Cell(0, i + 1, j + 1);
+				sudokuGrid.getArrayGrid()[i][j] = new Cell(0, i, j);
 			}
 		}
 		fillList(sudokuGrid.getArrayGrid(), sudokuGrid.getListGrid());
@@ -324,8 +324,8 @@ public class GridHelper {
 
 		for (int i = 0; i < 9; i++) {
 			for (int j = 0; j < 9; j++) {
-				int row = i + 1;
-				int column = j + 1;
+				int row = i;
+				int column = j;
 
 				if (gridString.charAt(i * 9 + j) == '.') {
 					arrayGrid[i][j] = new Cell(10, row, column);
@@ -368,8 +368,7 @@ public class GridHelper {
 						segmentGrid.get(m * 3 + l).add(
 								listGrid.get(j * 9 + offset + k + m * 27));
 						listGrid.get(j * 9 + offset + k + m * 27).setSegment(
-								m * 3 + l + 1);
-						;
+								m * 3 + l);
 					}
 				}
 

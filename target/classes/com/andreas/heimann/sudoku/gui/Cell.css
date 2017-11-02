@@ -1,0 +1,13 @@
+.label {
+	-fx-border-color: black;
+    -fx-font-size: 22px;
+    -fx-background-color: #F0F8FF;
+}
+
+.label:hover {
+	-fx-text-fill: Blue;
+}
+
+.segment {
+	-fx-border-color: black;
+}

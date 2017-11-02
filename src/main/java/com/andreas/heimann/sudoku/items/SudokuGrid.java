@@ -121,7 +121,7 @@ public class SudokuGrid {
 						segmentGrid.get(m * 3 + l).add(
 								listGrid.get(j * 9 + offset + k + m * 27));
 						listGrid.get(j * 9 + offset + k + m * 27).setSegment(
-								m * 3 + l + 1);
+								m * 3 + l);
 						;
 					}
 				}

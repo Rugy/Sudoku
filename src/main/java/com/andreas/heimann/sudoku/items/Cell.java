@@ -11,11 +11,13 @@ public class Cell {
 	private int column;
 	private int segment;
 	private int adjacentEmptyCells;
+	private int gridNumber;
 
 	public Cell(int number, int row, int column) {
 		this.number = number;
 		this.row = row;
 		this.column = column;
+		gridNumber = row * 9 + column;
 
 		if (number == 0) {
 			clearCell();
@@ -69,6 +71,14 @@ public class Cell {
 
 	public void setAdjacentEmptyCells(int adjacentEmptyCells) {
 		this.adjacentEmptyCells = adjacentEmptyCells;
+	}
+
+	public int getGridNumber() {
+		return gridNumber;
+	}
+
+	public void setGridNumber(int gridNumber) {
+		this.gridNumber = gridNumber;
 	}
 
 	public void clearCell() {

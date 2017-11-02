@@ -19,10 +19,7 @@ public class GridClearer {
 
 		SudokuGrid copyGrid = sudokuGrid.cloneSudokuGrid();
 		int attempt = 0;
-		int attemptLimit = 20;
-		if (difficulty.ordinal() > 1) {
-			attemptLimit = 40;
-		}
+		int attemptLimit = 10;
 
 		while (attempt < attemptLimit) {
 			int clearedCellNumber = (int) (Math.random() * filledCells.size());

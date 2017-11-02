@@ -72,9 +72,9 @@ public class GridSolver {
 		List<SolutionStep> solutionSteps = sudokuGrid.getSolutionSteps();
 
 		for (Cell aCell : emptyCells) {
-			int row = aCell.getRow() - 1;
-			int col = aCell.getColumn() - 1;
-			int segment = aCell.getSegment() - 1;
+			int row = aCell.getRow();
+			int col = aCell.getColumn();
+			int segment = aCell.getSegment();
 
 			for (int i = 0; i < 9; i++) {
 				int rowNumber = arrayGrid[row][i].getNumber();
@@ -111,9 +111,9 @@ public class GridSolver {
 		List<SolutionStep> solutionSteps = sudokuGrid.getSolutionSteps();
 
 		for (Cell aCell : emptyCells) {
-			int row = aCell.getRow() - 1;
-			int col = aCell.getColumn() - 1;
-			int segment = aCell.getSegment() - 1;
+			int row = aCell.getRow();
+			int col = aCell.getColumn();
+			int segment = aCell.getSegment();
 
 			for (int i = 0; i < aCell.getPossibleEntries().size(); i++) {
 				int entry = (int) aCell.getPossibleEntries().toArray()[i];
