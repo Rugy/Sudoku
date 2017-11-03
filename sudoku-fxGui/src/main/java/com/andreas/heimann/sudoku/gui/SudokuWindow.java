@@ -9,24 +9,21 @@ import javafx.scene.Scene;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
-import com.andreas.heimann.sudoku.GridClearer;
-import com.andreas.heimann.sudoku.GridHelper;
-import com.andreas.heimann.sudoku.GridSolver;
+import com.andreas.heimann.sudoku.controller.GridGuiController;
+import com.andreas.heimann.sudoku.controller.GridListener;
 import com.andreas.heimann.sudoku.items.Cell;
-import com.andreas.heimann.sudoku.items.Difficulty;
-import com.andreas.heimann.sudoku.items.SudokuGrid;
 
-public class SudokuWindow extends Application {
+public class SudokuWindow extends Application implements ViewUpdateListener {
+
+	private GridListener gridListener;
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 
-		SudokuGrid sudokuGrid = new SudokuGrid();
-		GridHelper.generateGrid(sudokuGrid);
-		List<Cell> listGrid = sudokuGrid.getListGrid();
-		GridClearer.clearIncrementally(sudokuGrid, Difficulty.ONE);
-		GridSolver.checkExcludeEntries(sudokuGrid,
-				GridSolver.getEmptyCells(sudokuGrid));
+		GridGuiController controller = new GridGuiController(this);
+		setGridListener(controller);
+
+		List<Cell> listGrid = gridListener.getListGrid();
 
 		GridPane gridPane = new GridPane();
 		gridPane.setPadding(new Insets(10));
@@ -114,6 +111,19 @@ public class SudokuWindow extends Application {
 
 	public static void main(String[] args) {
 		launch(args);
+	}
+
+	public GridListener getGridListener() {
+		return gridListener;
+	}
+
+	public void setGridListener(GridListener gridListener) {
+		this.gridListener = gridListener;
+	}
+
+	@Override
+	public void updateGrid() {
+
 	}
 
 }

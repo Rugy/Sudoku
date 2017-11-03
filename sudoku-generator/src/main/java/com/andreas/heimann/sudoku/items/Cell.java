@@ -92,6 +92,21 @@ public class Cell {
 		return possibleEntries.remove(entry);
 	}
 
+	public Cell copyCell() {
+		Cell copiedCell = new Cell(number, row, column);
+		copiedCell.setAdjacentEmptyCells(adjacentEmptyCells);
+		copiedCell.setGridNumber(gridNumber);
+		copiedCell.setSegment(segment);
+		Set<Integer> entriesCopy = new HashSet<>();
+		for (int i = 0; i < possibleEntries.size(); i++) {
+			entriesCopy
+					.add(new Integer((Integer) possibleEntries.toArray()[i]));
+		}
+		copiedCell.setPossibleEntries(entriesCopy);
+
+		return copiedCell;
+	}
+
 	@Override
 	public String toString() {
 		return "Cell: " + row + "," + column + " in segment " + segment;
