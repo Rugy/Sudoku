@@ -9,18 +9,21 @@
     <version>1.0-SNAPSHOT</version>
   </parent>
 	
-  <groupId>com.andreas.heimann.sudoku</groupId>
   <artifactId>sudoku-fxGui</artifactId>
-  <version>1.0-SNAPSHOT</version>
-	
-  <name>sudoku-fxGui</name>
+  <name>Sudoku FxGui</name>
   <url>http://maven.apache.org</url>
+  
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>3.8.1</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <artifactId>sudoku-generator</artifactId>
+	  <groupId>com.andreas.heimann.sudoku</groupId>
+	  <version>1.0-SNAPSHOT</version>
     </dependency>
   </dependencies>
 </project>
