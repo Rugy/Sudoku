@@ -10,6 +10,22 @@ public class GridClearer {
 
 	public static void clearIncrementally(SudokuGrid sudokuGrid,
 			Difficulty difficulty) {
+		SudokuGrid copyGrid;
+		List<Integer> removedCells;
+
+		do {
+			copyGrid = sudokuGrid.cloneSudokuGrid();
+			removedCells = clear(copyGrid, sudokuGrid, difficulty);
+		} while (copyGrid.getDifficulty() != difficulty);
+
+		for (int i = 0; i < removedCells.size(); i++) {
+			int removedListCell = removedCells.get(i);
+			sudokuGrid.getListGrid().get(removedListCell).clearCell();
+		}
+	}
+
+	private static List<Integer> clear(SudokuGrid copyGrid,
+			SudokuGrid sudokuGrid, Difficulty difficulty) {
 		List<Integer> filledCells = new ArrayList<>();
 		List<Integer> removedCells = new ArrayList<>();
 
@@ -17,7 +33,6 @@ public class GridClearer {
 			filledCells.add(i);
 		}
 
-		SudokuGrid copyGrid = sudokuGrid.cloneSudokuGrid();
 		int attempt = 0;
 		int attemptLimit = 10;
 
@@ -31,7 +46,9 @@ public class GridClearer {
 				copyGrid.getListGrid().get(clearedCell).clearCell();
 			}
 
+			Difficulty prevSolvedDifficulty = copyGrid.getDifficulty();
 			if (!GridSolver.solveGrid(copyGrid, difficulty)) {
+				copyGrid.setDifficulty(prevSolvedDifficulty);
 				attempt++;
 				filledCells.add(clearedCellValue);
 				removedCells.remove(removedCells.size() - 1);
@@ -44,9 +61,7 @@ public class GridClearer {
 			}
 		}
 
-		for (int i = 0; i < removedCells.size(); i++) {
-			int removedListCell = removedCells.get(i);
-			sudokuGrid.getListGrid().get(removedListCell).clearCell();
-		}
+		return removedCells;
 	}
+
 }

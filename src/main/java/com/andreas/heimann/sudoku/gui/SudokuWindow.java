@@ -25,7 +25,6 @@ public class SudokuWindow extends Application {
 		GridHelper.generateGrid(sudokuGrid);
 		List<Cell> listGrid = sudokuGrid.getListGrid();
 		GridClearer.clearIncrementally(sudokuGrid, Difficulty.FOUR);
-		GridHelper.printGrid(sudokuGrid.getArrayGrid());
 		GridSolver.checkExcludeEntries(sudokuGrid,
 				GridSolver.getEmptyCells(sudokuGrid));
 
