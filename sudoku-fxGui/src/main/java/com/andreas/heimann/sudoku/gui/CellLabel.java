@@ -13,6 +13,7 @@ public class CellLabel extends Label {
 
 	public CellLabel(String text, int row, int column, int segment) {
 		super(text);
+
 		this.row = row;
 		this.column = column;
 		this.segment = segment;
@@ -40,6 +41,10 @@ public class CellLabel extends Label {
 
 	public void setSegment(int segment) {
 		this.segment = segment;
+	}
+
+	public void setCellText(String text) {
+		setText(text);
 	}
 
 }

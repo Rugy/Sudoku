@@ -2,11 +2,16 @@ package com.andreas.heimann.sudoku.gui;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javafx.application.Application;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
 import com.andreas.heimann.sudoku.controller.GridGuiController;
@@ -100,6 +105,41 @@ public class SudokuWindow extends Application implements ViewUpdateListener {
 
 			gridPane.add(segmentGridPane, i % 3, i / 3);
 		}
+
+		Button showEntriesButton = new Button("Show Entries");
+		showEntriesButton.setId("showEntriesButton");
+		showEntriesButton.setOnAction(e -> {
+			for (int j = 0; j < 81; j++) {
+				int row = cells.get(j).getRow();
+				int column = cells.get(j).getColumn();
+				int segment = cells.get(j).getSegment();
+				Set<Integer> possibleEntries = listGrid.get(j)
+						.getPossibleEntries();
+				double size = ((GridPane) gridPane.getChildren().get(segment))
+						.getHeight();
+
+				if (listGrid.get(row * 9 + column).getNumber() == 0) {
+					((GridPane) gridPane.getChildren().get(segment))
+							.getChildren().remove(cells.get(row * 9 + column));
+					GridPane entriesPane = new GridPane();
+					for (int i = 0; i < possibleEntries.size(); i++) {
+						Label label = new Label("9");
+						label.setMinSize(size / 9, size / 9);
+						label.setMaxSize(size / 9, size / 9);
+						label.getStyleClass().add("entry-option");
+						entriesPane.add(label, i % 3, i / 3);
+					}
+					((GridPane) gridPane.getChildren().get(segment)).add(
+							entriesPane, column % 3, row % 3);
+				}
+			}
+		});
+		HBox buttonBox = new HBox();
+		buttonBox.setPadding(new Insets(25, 0, 0, 0));
+		buttonBox.setAlignment(Pos.CENTER);
+		buttonBox.getChildren().add(showEntriesButton);
+
+		gridPane.add(buttonBox, 0, 3, 3, 1);
 
 		Scene scene = new Scene(gridPane);
 

@@ -11,3 +11,7 @@
 .segment {
 	-fx-border-color: black;
 }
+
+.entry-option {
+	-fx-font-size: 8px;
+}
