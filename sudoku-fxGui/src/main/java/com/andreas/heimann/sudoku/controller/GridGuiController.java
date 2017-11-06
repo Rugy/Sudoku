@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.andreas.heimann.sudoku.GridClearer;
 import com.andreas.heimann.sudoku.GridHelper;
+import com.andreas.heimann.sudoku.GridSolver;
 import com.andreas.heimann.sudoku.gui.ViewUpdateListener;
 import com.andreas.heimann.sudoku.items.Cell;
 import com.andreas.heimann.sudoku.items.Difficulty;
@@ -21,6 +22,8 @@ public class GridGuiController implements GridListener {
 		sudokuGrid = new SudokuGrid();
 		GridHelper.generateGrid(sudokuGrid);
 		GridClearer.clearIncrementally(sudokuGrid, Difficulty.ONE);
+		GridSolver.checkExcludeEntries(sudokuGrid,
+				GridSolver.getEmptyCells(sudokuGrid));
 
 	}
 

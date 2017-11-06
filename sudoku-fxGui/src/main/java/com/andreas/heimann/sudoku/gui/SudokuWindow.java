@@ -21,6 +21,7 @@ import com.andreas.heimann.sudoku.items.Cell;
 public class SudokuWindow extends Application implements ViewUpdateListener {
 
 	private GridListener gridListener;
+	public static final int CELL_SIZE = 200;
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
@@ -115,17 +116,26 @@ public class SudokuWindow extends Application implements ViewUpdateListener {
 				int segment = cells.get(j).getSegment();
 				Set<Integer> possibleEntries = listGrid.get(j)
 						.getPossibleEntries();
-				double size = ((GridPane) gridPane.getChildren().get(segment))
-						.getHeight();
 
 				if (listGrid.get(row * 9 + column).getNumber() == 0) {
 					((GridPane) gridPane.getChildren().get(segment))
 							.getChildren().remove(cells.get(row * 9 + column));
+					int size = (int) ((GridPane) gridPane.getChildren().get(
+							segment)).getHeight();
 					GridPane entriesPane = new GridPane();
-					for (int i = 0; i < possibleEntries.size(); i++) {
-						Label label = new Label("9");
-						label.setMinSize(size / 9, size / 9);
-						label.setMaxSize(size / 9, size / 9);
+					entriesPane.getStyleClass().add("segment");
+					entriesPane.setMaxSize(size / 3, size / 3);
+					entriesPane.setMinSize(size / 3, size / 3);
+					for (int i = 0; i < 9; i++) {
+						String entry;
+						if (possibleEntries.contains(i)) {
+							entry = String.valueOf(i);
+						} else {
+							entry = "";
+						}
+						Label label = new Label(entry);
+						label.setMinSize(size / 9 - 1, size / 9 - 1);
+						label.setAlignment(Pos.CENTER);
 						label.getStyleClass().add("entry-option");
 						entriesPane.add(label, i % 3, i / 3);
 					}
