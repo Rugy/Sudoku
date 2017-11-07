@@ -38,6 +38,7 @@ public class EntryPane extends GridPane {
 			label.setMinSize(size / 3 - 2, size / 3 - 2);
 			label.setAlignment(Pos.CENTER);
 			label.getStyleClass().add("entry-option");
+			label.getStyleClass().add("entry");
 			add(label, i % 3, i / 3);
 		}
 	}
@@ -51,8 +52,8 @@ public class EntryPane extends GridPane {
 		Label label = new Label(String.valueOf(entry));
 		label.setMinSize(60, 60);
 		label.setAlignment(Pos.CENTER);
+		label.getStyleClass().add("entry");
 		add(label, 0, 0);
-
 	}
 
 	public int getRow() {
@@ -79,4 +80,26 @@ public class EntryPane extends GridPane {
 		this.segment = segment;
 	}
 
+	public void changeEntryPane(Set<Integer> possibleEntries, int size) {
+		getChildren().remove(0);
+
+		setMaxSize(size, size);
+		setMinSize(size, size);
+		setAlignment(Pos.CENTER);
+
+		for (int i = 0; i < 9; i++) {
+			String entry;
+			if (possibleEntries.contains(i)) {
+				entry = String.valueOf(i);
+			} else {
+				entry = "";
+			}
+			Label label = new Label(entry);
+			label.setMinSize(size / 3 - 2, size / 3 - 2);
+			label.setAlignment(Pos.CENTER);
+			label.getStyleClass().add("entry-option");
+			label.getStyleClass().add("entry");
+			add(label, i % 3, i / 3);
+		}
+	}
 }

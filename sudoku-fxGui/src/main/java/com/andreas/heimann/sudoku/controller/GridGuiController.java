@@ -24,7 +24,6 @@ public class GridGuiController implements GridListener {
 		GridClearer.clearIncrementally(sudokuGrid, Difficulty.ONE);
 		GridSolver.checkExcludeEntries(sudokuGrid,
 				GridSolver.getEmptyCells(sudokuGrid));
-
 	}
 
 	@Override
