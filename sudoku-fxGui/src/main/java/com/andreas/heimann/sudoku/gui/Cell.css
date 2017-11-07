@@ -16,3 +16,7 @@
 	-fx-font-size: 12px;
 	-fx-border-width: 0px;
 }
+
+.adjacent-hover {
+	-fx-background-color: purple;
+}

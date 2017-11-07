@@ -9,7 +9,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
@@ -34,7 +33,7 @@ public class SudokuWindow extends Application implements ViewUpdateListener {
 		GridPane gridPane = new GridPane();
 		gridPane.setPadding(new Insets(10));
 
-		List<CellLabel> cells = new ArrayList<>();
+		List<EntryPane> cells = new ArrayList<>();
 		for (int i = 0; i < 81; i++) {
 			Cell cell = listGrid.get(i);
 			int number = cell.getNumber();
@@ -42,8 +41,7 @@ public class SudokuWindow extends Application implements ViewUpdateListener {
 			int column = cell.getColumn();
 			int segment = cell.getSegment();
 
-			cells.add(new CellLabel(String.valueOf(number), row, column,
-					segment));
+			cells.add(new EntryPane(number, row, column, segment));
 		}
 
 		for (int i = 0; i < 9; i++) {
@@ -53,52 +51,58 @@ public class SudokuWindow extends Application implements ViewUpdateListener {
 
 			for (int j = 0; j < 81; j++) {
 				if (cells.get(j).getSegment() == i) {
-					CellLabel label = cells.get(j);
+					EntryPane entryPane = cells.get(j);
 
-					label.setPadding(new Insets(15, 25, 15, 25));
-					label.setOnMouseEntered(e -> {
-						for (CellLabel aLabel : cells) {
-							if (aLabel == label) {
+					entryPane
+							.setOnMouseEntered(e -> {
+								for (EntryPane aPane : cells) {
+									if (aPane == entryPane) {
+										continue;
+									}
+									if (aPane.getRow() == entryPane.getRow()) {
+										aPane.setStyle("-fx-background-color: "
+												+ EntryPane.COLOR_HOVER_ADJACENT
+												+ ";");
+									}
+									if (aPane.getColumn() == entryPane
+											.getColumn()) {
+										aPane.setStyle("-fx-background-color: "
+												+ EntryPane.COLOR_HOVER_ADJACENT
+												+ ";");
+									}
+									if (aPane.getSegment() == entryPane
+											.getSegment()) {
+										aPane.setStyle("-fx-background-color: "
+												+ EntryPane.COLOR_HOVER_ADJACENT
+												+ ";");
+									}
+								}
+								entryPane.setStyle("-fx-background-color: "
+										+ EntryPane.COLOR_HOVER + ";");
+							});
+					entryPane.setOnMouseExited(e -> {
+						for (EntryPane aLabel : cells) {
+							if (aLabel == entryPane) {
 								continue;
 							}
-							if (aLabel.getRow() == label.getRow()) {
+							if (aLabel.getRow() == entryPane.getRow()) {
 								aLabel.setStyle("-fx-background-color: "
-										+ CellLabel.COLOR_HOVER_ADJACENT + ";");
+										+ EntryPane.COLOR_NEUTRAL + ";");
 							}
-							if (aLabel.getColumn() == label.getColumn()) {
+							if (aLabel.getColumn() == entryPane.getColumn()) {
 								aLabel.setStyle("-fx-background-color: "
-										+ CellLabel.COLOR_HOVER_ADJACENT + ";");
+										+ EntryPane.COLOR_NEUTRAL + ";");
 							}
-							if (aLabel.getSegment() == label.getSegment()) {
+							if (aLabel.getSegment() == entryPane.getSegment()) {
 								aLabel.setStyle("-fx-background-color: "
-										+ CellLabel.COLOR_HOVER_ADJACENT + ";");
+										+ EntryPane.COLOR_NEUTRAL + ";");
 							}
 						}
-						label.setStyle("-fx-background-color: "
-								+ CellLabel.COLOR_HOVER + ";");
+						entryPane.setStyle("-fx-background-color: "
+								+ EntryPane.COLOR_NEUTRAL + ";");
 					});
-					label.setOnMouseExited(e -> {
-						for (CellLabel aLabel : cells) {
-							if (aLabel == label) {
-								continue;
-							}
-							if (aLabel.getRow() == label.getRow()) {
-								aLabel.setStyle("-fx-background-color: "
-										+ CellLabel.COLOR_NEUTRAL + ";");
-							}
-							if (aLabel.getColumn() == label.getColumn()) {
-								aLabel.setStyle("-fx-background-color: "
-										+ CellLabel.COLOR_NEUTRAL + ";");
-							}
-							if (aLabel.getSegment() == label.getSegment()) {
-								aLabel.setStyle("-fx-background-color: "
-										+ CellLabel.COLOR_NEUTRAL + ";");
-							}
-						}
-						label.setStyle("-fx-background-color: "
-								+ CellLabel.COLOR_NEUTRAL + ";");
-					});
-					segmentGridPane.add(label, usedCells % 3, usedCells / 3);
+					segmentGridPane
+							.add(entryPane, usedCells % 3, usedCells / 3);
 
 					usedCells++;
 				}
@@ -122,23 +126,9 @@ public class SudokuWindow extends Application implements ViewUpdateListener {
 							.getChildren().remove(cells.get(row * 9 + column));
 					int size = (int) ((GridPane) gridPane.getChildren().get(
 							segment)).getHeight();
-					GridPane entriesPane = new GridPane();
+					EntryPane entriesPane = new EntryPane(size / 3,
+							possibleEntries, row, column, segment);
 					entriesPane.getStyleClass().add("segment");
-					entriesPane.setMaxSize(size / 3, size / 3);
-					entriesPane.setMinSize(size / 3, size / 3);
-					for (int i = 0; i < 9; i++) {
-						String entry;
-						if (possibleEntries.contains(i)) {
-							entry = String.valueOf(i);
-						} else {
-							entry = "";
-						}
-						Label label = new Label(entry);
-						label.setMinSize(size / 9 - 1, size / 9 - 1);
-						label.setAlignment(Pos.CENTER);
-						label.getStyleClass().add("entry-option");
-						entriesPane.add(label, i % 3, i / 3);
-					}
 					((GridPane) gridPane.getChildren().get(segment)).add(
 							entriesPane, column % 3, row % 3);
 				}
