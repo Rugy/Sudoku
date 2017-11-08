@@ -16,6 +16,8 @@ public class EntryPane extends GridPane {
 	private int column;
 	private int segment;
 
+	private CellListener cellListener;
+
 	public EntryPane(int size, Set<Integer> possibleEntries, int row,
 			int column, int segment) {
 		super();
@@ -38,7 +40,7 @@ public class EntryPane extends GridPane {
 			label.setMinSize(size / 3 - 2, size / 3 - 2);
 			label.setAlignment(Pos.CENTER);
 			label.getStyleClass().add("entry-option");
-			label.getStyleClass().add("entry");
+			addMouseClick(label);
 			add(label, i % 3, i / 3);
 		}
 	}
@@ -80,7 +82,7 @@ public class EntryPane extends GridPane {
 		this.segment = segment;
 	}
 
-	public void changeEntryPane(Set<Integer> possibleEntries, int size) {
+	public void changePossibleEntryPane(Set<Integer> possibleEntries, int size) {
 		getChildren().remove(0);
 
 		setMaxSize(size, size);
@@ -89,8 +91,8 @@ public class EntryPane extends GridPane {
 
 		for (int i = 0; i < 9; i++) {
 			String entry;
-			if (possibleEntries.contains(i)) {
-				entry = String.valueOf(i);
+			if (possibleEntries.contains(i + 1)) {
+				entry = String.valueOf(i + 1);
 			} else {
 				entry = "";
 			}
@@ -98,8 +100,43 @@ public class EntryPane extends GridPane {
 			label.setMinSize(size / 3 - 2, size / 3 - 2);
 			label.setAlignment(Pos.CENTER);
 			label.getStyleClass().add("entry-option");
-			label.getStyleClass().add("entry");
+			addMouseClick(label);
 			add(label, i % 3, i / 3);
 		}
+	}
+
+	public void changeEntryPane(int number, int size) {
+		getChildren().removeAll(getChildren());
+
+		setMaxSize(size, size);
+		setMinSize(size, size);
+		setAlignment(Pos.CENTER);
+
+		Label label = new Label(String.valueOf(number));
+		label.setMinSize(60, 60);
+		label.setAlignment(Pos.CENTER);
+		label.getStyleClass().add("entry");
+		add(label, 0, 0);
+	}
+
+	private void addMouseClick(Label label) {
+		label.setOnMouseClicked(e -> {
+			String numberString = ((Label) e.getSource()).getText();
+
+			if ("".equals(numberString)) {
+				return;
+			} else {
+				int number = Integer.valueOf(numberString);
+				cellListener.updateValue(number, row * 9 + column);
+			}
+		});
+	}
+
+	public CellListener getCellListener() {
+		return cellListener;
+	}
+
+	public void setCellListener(CellListener cellListener) {
+		this.cellListener = cellListener;
 	}
 }

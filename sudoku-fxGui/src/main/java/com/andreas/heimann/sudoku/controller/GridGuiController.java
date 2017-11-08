@@ -13,8 +13,8 @@ import com.andreas.heimann.sudoku.items.SudokuGrid;
 
 public class GridGuiController implements GridListener {
 
-	SudokuGrid sudokuGrid;
-	ViewUpdateListener view;
+	private SudokuGrid sudokuGrid;
+	private ViewUpdateListener view;
 
 	public GridGuiController(ViewUpdateListener view) {
 		this.view = view;
@@ -24,6 +24,7 @@ public class GridGuiController implements GridListener {
 		GridClearer.clearIncrementally(sudokuGrid, Difficulty.ONE);
 		GridSolver.checkExcludeEntries(sudokuGrid,
 				GridSolver.getEmptyCells(sudokuGrid));
+		GridHelper.printGrid(sudokuGrid.getArrayGrid());
 	}
 
 	@Override
@@ -32,9 +33,16 @@ public class GridGuiController implements GridListener {
 
 		for (Cell aCell : sudokuGrid.getListGrid()) {
 			cells.add(aCell.copyCell());
-			aCell.setNumber(0);
 		}
 
 		return cells;
+	}
+
+	@Override
+	public void updateGrid(int number, int cellId) {
+		sudokuGrid.getListGrid().get(cellId).setNumber(number);
+		GridSolver.checkExcludeEntries(sudokuGrid,
+				GridSolver.getEmptyCells(sudokuGrid));
+		view.updateGrid();
 	}
 }

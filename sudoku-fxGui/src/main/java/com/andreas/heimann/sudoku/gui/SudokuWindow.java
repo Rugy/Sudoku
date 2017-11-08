@@ -17,9 +17,13 @@ import com.andreas.heimann.sudoku.controller.GridGuiController;
 import com.andreas.heimann.sudoku.controller.GridListener;
 import com.andreas.heimann.sudoku.items.Cell;
 
-public class SudokuWindow extends Application implements ViewUpdateListener {
+public class SudokuWindow extends Application implements ViewUpdateListener,
+		CellListener {
 
 	private GridListener gridListener;
+	private List<EntryPane> cells;
+	private List<Cell> listGrid;
+	private int size;
 	public static final int CELL_SIZE = 200;
 
 	@Override
@@ -28,7 +32,7 @@ public class SudokuWindow extends Application implements ViewUpdateListener {
 		GridGuiController controller = new GridGuiController(this);
 		setGridListener(controller);
 
-		List<Cell> listGrid = gridListener.getListGrid();
+		listGrid = gridListener.getListGrid();
 
 		GridPane gridPane = new GridPane();
 		gridPane.setPadding(new Insets(10));
@@ -38,7 +42,7 @@ public class SudokuWindow extends Application implements ViewUpdateListener {
 			gridPane.add(segmentGridPane, i % 3, i / 3);
 		}
 
-		List<EntryPane> cells = new ArrayList<>();
+		cells = new ArrayList<>();
 		for (int i = 0; i < 81; i++) {
 			Cell cell = listGrid.get(i);
 			int number = cell.getNumber();
@@ -48,6 +52,7 @@ public class SudokuWindow extends Application implements ViewUpdateListener {
 
 			EntryPane entryPane = new EntryPane(number, row, column, segment);
 			entryPane.getStyleClass().add("entryPane");
+			entryPane.setCellListener(this);
 			cells.add(entryPane);
 			GridPane segmentGridPane = (GridPane) gridPane.getChildren().get(
 					segment);
@@ -75,25 +80,29 @@ public class SudokuWindow extends Application implements ViewUpdateListener {
 								+ EntryPane.COLOR_HOVER_ADJACENT + ";");
 					}
 				}
+				entryPane.setStyle("-fx-background-color: "
+						+ EntryPane.COLOR_HOVER + ";");
 			});
 			entryPane.setOnMouseExited(e -> {
-				for (EntryPane aLabel : cells) {
-					if (aLabel == entryPane) {
+				for (EntryPane aPane : cells) {
+					if (aPane == entryPane) {
 						continue;
 					}
-					if (aLabel.getRow() == entryPane.getRow()) {
-						aLabel.setStyle("-fx-background-color: "
+					if (aPane.getRow() == entryPane.getRow()) {
+						aPane.setStyle("-fx-background-color: "
 								+ EntryPane.COLOR_NEUTRAL + ";");
 					}
-					if (aLabel.getColumn() == entryPane.getColumn()) {
-						aLabel.setStyle("-fx-background-color: "
+					if (aPane.getColumn() == entryPane.getColumn()) {
+						aPane.setStyle("-fx-background-color: "
 								+ EntryPane.COLOR_NEUTRAL + ";");
 					}
-					if (aLabel.getSegment() == entryPane.getSegment()) {
-						aLabel.setStyle("-fx-background-color: "
+					if (aPane.getSegment() == entryPane.getSegment()) {
+						aPane.setStyle("-fx-background-color: "
 								+ EntryPane.COLOR_NEUTRAL + ";");
 					}
 				}
+				entryPane.setStyle("-fx-background-color: "
+						+ EntryPane.COLOR_NEUTRAL + ";");
 			});
 		}
 
@@ -108,9 +117,9 @@ public class SudokuWindow extends Application implements ViewUpdateListener {
 						.getPossibleEntries();
 
 				if (listGrid.get(row * 9 + column).getNumber() == 0) {
-					int size = (int) ((GridPane) gridPane.getChildren().get(
-							segment)).getHeight();
-					cells.get(row * 9 + column).changeEntryPane(
+					size = (int) ((GridPane) gridPane.getChildren()
+							.get(segment)).getHeight();
+					cells.get(row * 9 + column).changePossibleEntryPane(
 							possibleEntries, size / 3);
 					// EntryPane entriesPane = new EntryPane(size / 3,
 					// possibleEntries, row, column, segment);
@@ -149,7 +158,17 @@ public class SudokuWindow extends Application implements ViewUpdateListener {
 
 	@Override
 	public void updateGrid() {
+		listGrid = gridListener.getListGrid();
 
+		for (int i = 0; i < 81; i++) {
+			Cell cell = listGrid.get(i);
+			int number = cell.getNumber();
+			cells.get(i).changeEntryPane(number, size / 3);
+		}
 	}
 
+	@Override
+	public void updateValue(int number, int cellId) {
+		gridListener.updateGrid(number, cellId);
+	}
 }
