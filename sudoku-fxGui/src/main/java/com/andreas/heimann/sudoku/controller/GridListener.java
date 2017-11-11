@@ -15,5 +15,11 @@ public interface GridListener {
 
 	public void checkExcludeEntries();
 
+	public void checkUniqueEntries();
+
+	public void checkUniqueRowColumn();
+
+	public void checkEntryCombinations();
+
 	public void solveGrid();
 }

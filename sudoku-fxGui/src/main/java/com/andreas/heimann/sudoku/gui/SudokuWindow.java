@@ -6,11 +6,9 @@ import java.util.Set;
 
 import javafx.application.Application;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
 import com.andreas.heimann.sudoku.controller.GridGuiController;
@@ -25,6 +23,9 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 	private GridPane gridPane;
 	private Button solveGridButton;
 	private Button excludeEntriesButton;
+	private Button uniqueEntriesButton;
+	private Button uniqueRowColumnButton;
+	private Button entryCombinationButton;
 	private int size = 60;
 
 	@Override
@@ -36,6 +37,9 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 		makeGridCells();
 		addSolveGridButton();
 		addExcludeEntriesButton();
+		addUniqueEntriesButton();
+		addUniqueRowColumnButton();
+		addEntryCombinationButton();
 
 		Scene scene = new Scene(gridPane);
 		primaryStage.setScene(scene);
@@ -133,31 +137,56 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 	private void addSolveGridButton() {
 		solveGridButton = new Button("Solve Grid");
 		solveGridButton.setId("solveGridButton");
+		solveGridButton.getStyleClass().add("button");
 		solveGridButton.setOnAction(e -> {
 			gridListener.solveGrid();
 		});
 
-		HBox buttonBox = new HBox();
-		buttonBox.setPadding(new Insets(25, 0, 0, 0));
-		buttonBox.setAlignment(Pos.CENTER);
-		buttonBox.getChildren().add(solveGridButton);
-
-		gridPane.add(buttonBox, 0, 3, 2, 1);
+		gridPane.add(solveGridButton, 0, 3);
 	}
 
 	private void addExcludeEntriesButton() {
 		excludeEntriesButton = new Button("Exclude Entries");
 		excludeEntriesButton.setId("excludeEntriesButton");
+		excludeEntriesButton.getStyleClass().add("button");
 		excludeEntriesButton.setOnAction(e -> {
 			gridListener.checkExcludeEntries();
 		});
 
-		HBox buttonBox = new HBox();
-		buttonBox.setPadding(new Insets(25, 0, 0, 0));
-		buttonBox.setAlignment(Pos.CENTER);
-		buttonBox.getChildren().add(excludeEntriesButton);
+		gridPane.add(excludeEntriesButton, 1, 3);
+	}
 
-		gridPane.add(buttonBox, 1, 3, 2, 1);
+	private void addUniqueEntriesButton() {
+		uniqueEntriesButton = new Button("Unique Entries");
+		uniqueEntriesButton.setId("uniqueEntriesButton");
+		uniqueEntriesButton.getStyleClass().add("button");
+		uniqueEntriesButton.setOnAction(e -> {
+			gridListener.checkUniqueEntries();
+		});
+
+		gridPane.add(uniqueEntriesButton, 2, 3);
+	}
+
+	private void addUniqueRowColumnButton() {
+		uniqueRowColumnButton = new Button("Unique Row or Column");
+		uniqueRowColumnButton.setId("uniqueRowColumnButton");
+		uniqueRowColumnButton.getStyleClass().add("button");
+		uniqueRowColumnButton.setOnAction(e -> {
+			gridListener.checkUniqueRowColumn();
+		});
+
+		gridPane.add(uniqueRowColumnButton, 0, 4);
+	}
+
+	private void addEntryCombinationButton() {
+		entryCombinationButton = new Button("Entry Combinations");
+		entryCombinationButton.setId("entryCombinationButton");
+		entryCombinationButton.getStyleClass().add("button");
+		entryCombinationButton.setOnAction(e -> {
+			gridListener.checkEntryCombinations();
+		});
+
+		gridPane.add(entryCombinationButton, 1, 4);
 	}
 
 	public static void main(String[] args) {

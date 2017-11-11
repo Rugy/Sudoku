@@ -23,7 +23,7 @@ public class GridGuiController implements GridListener {
 
 		sudokuGrid = new SudokuGrid();
 		GridHelper.generateGrid(sudokuGrid);
-		GridClearer.clearIncrementally(sudokuGrid, Difficulty.ONE);
+		GridClearer.clearIncrementally(sudokuGrid, Difficulty.FOUR);
 	}
 
 	@Override
@@ -69,8 +69,29 @@ public class GridGuiController implements GridListener {
 	}
 
 	@Override
+	public void checkUniqueEntries() {
+		GridSolver.checkUniqueEntry(sudokuGrid,
+				GridSolver.getEmptyCells(sudokuGrid));
+		view.updateGrid();
+	}
+
+	@Override
+	public void checkUniqueRowColumn() {
+		GridSolver.checkUniqueRowColumn(sudokuGrid,
+				GridSolver.getEmptyCells(sudokuGrid));
+		view.updateGrid();
+	}
+
+	@Override
+	public void checkEntryCombinations() {
+		GridSolver.checkEntryCombinations(sudokuGrid,
+				GridSolver.getEmptyCells(sudokuGrid));
+		view.updateGrid();
+	}
+
+	@Override
 	public void solveGrid() {
-		GridSolver.solveGrid(sudokuGrid, Difficulty.ONE);
+		GridSolver.solveGrid(sudokuGrid, Difficulty.FOUR);
 		view.updateGrid();
 	}
 }
