@@ -65,8 +65,8 @@ public class MainWindow extends Application {
 
 		primaryStage.setTitle("Form Tutorial");
 		primaryStage.setScene(scene);
-		scene.getStylesheets().add(
-				MainWindow.class.getResource("MainWindow2.css")
+		scene.getStylesheets()
+				.add(MainWindow.class.getResource("MainWindow.css")
 						.toExternalForm());
 		primaryStage.show();
 	}

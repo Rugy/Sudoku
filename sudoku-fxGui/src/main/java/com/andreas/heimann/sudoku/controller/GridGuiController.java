@@ -24,8 +24,6 @@ public class GridGuiController implements GridListener {
 		sudokuGrid = new SudokuGrid();
 		GridHelper.generateGrid(sudokuGrid);
 		GridClearer.clearIncrementally(sudokuGrid, Difficulty.ONE);
-		GridSolver.checkExcludeEntries(sudokuGrid,
-				GridSolver.getEmptyCells(sudokuGrid));
 	}
 
 	@Override
@@ -40,10 +38,8 @@ public class GridGuiController implements GridListener {
 	}
 
 	@Override
-	public void updateGrid(int number, int cellId) {
+	public void makeEntry(int number, int cellId) {
 		sudokuGrid.getListGrid().get(cellId).setNumber(number);
-		GridSolver.checkExcludeEntries(sudokuGrid,
-				GridSolver.getEmptyCells(sudokuGrid));
 		view.updateGrid();
 	}
 
@@ -54,5 +50,27 @@ public class GridGuiController implements GridListener {
 		Set<Integer> possibleEntries = new HashSet<>(cell.getPossibleEntries());
 
 		view.updateCell(cellId, possibleEntries);
+	}
+
+	@Override
+	public void addPossibleEntry(int number, int cellId) {
+		Cell cell = sudokuGrid.getListGrid().get(cellId);
+		cell.getPossibleEntries().add(number);
+		Set<Integer> possibleEntries = new HashSet<>(cell.getPossibleEntries());
+
+		view.updateCell(cellId, possibleEntries);
+	}
+
+	@Override
+	public void checkExcludeEntries() {
+		GridSolver.checkExcludeEntries(sudokuGrid,
+				GridSolver.getEmptyCells(sudokuGrid));
+		view.updateGrid();
+	}
+
+	@Override
+	public void solveGrid() {
+		GridSolver.solveGrid(sudokuGrid, Difficulty.ONE);
+		view.updateGrid();
 	}
 }

@@ -97,11 +97,7 @@ public class Cell {
 		copiedCell.setAdjacentEmptyCells(adjacentEmptyCells);
 		copiedCell.setGridNumber(gridNumber);
 		copiedCell.setSegment(segment);
-		Set<Integer> entriesCopy = new HashSet<>();
-		for (int i = 0; i < possibleEntries.size(); i++) {
-			entriesCopy
-					.add(new Integer((Integer) possibleEntries.toArray()[i]));
-		}
+		Set<Integer> entriesCopy = new HashSet<>(possibleEntries);
 		copiedCell.setPossibleEntries(entriesCopy);
 
 		return copiedCell;

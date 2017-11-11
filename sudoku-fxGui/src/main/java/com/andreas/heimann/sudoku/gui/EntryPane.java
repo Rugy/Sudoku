@@ -26,14 +26,14 @@ public class EntryPane extends GridPane {
 		this.column = column;
 		this.segment = segment;
 
-		setMaxSize(size, size);
 		setMinSize(size, size);
+		setMaxSize(size, size);
 		setAlignment(Pos.CENTER);
 
 		for (int i = 0; i < 9; i++) {
 			String entry;
-			if (possibleEntries.contains(i)) {
-				entry = String.valueOf(i);
+			if (possibleEntries.contains(i + 1)) {
+				entry = String.valueOf(i + 1);
 			} else {
 				entry = "";
 			}
@@ -46,14 +46,19 @@ public class EntryPane extends GridPane {
 		}
 	}
 
-	public EntryPane(int entry, int row, int column, int segment) {
+	public EntryPane(int size, int entry, int row, int column, int segment) {
 		super();
 		this.row = row;
 		this.column = column;
 		this.segment = segment;
 
+		setMinSize(size, size);
+		setMaxSize(size, size);
+		setAlignment(Pos.CENTER);
+
 		Label label = new Label(String.valueOf(entry));
-		label.setMinSize(60, 60);
+		label.setMinSize(size, size);
+		label.setMaxSize(size, size);
 		label.setAlignment(Pos.CENTER);
 		label.getStyleClass().add("entry");
 		add(label, 0, 0);
@@ -86,10 +91,6 @@ public class EntryPane extends GridPane {
 	public void changeToPossibleEntryPane(Set<Integer> possibleEntries, int size) {
 		getChildren().removeAll(getChildren());
 
-		setMaxSize(size, size);
-		setMinSize(size, size);
-		setAlignment(Pos.CENTER);
-
 		for (int i = 0; i < 9; i++) {
 			String entry;
 			if (possibleEntries.contains(i + 1)) {
@@ -109,29 +110,60 @@ public class EntryPane extends GridPane {
 	public void changeToEntryPane(int number, int size) {
 		getChildren().removeAll(getChildren());
 
-		setMaxSize(size, size);
-		setMinSize(size, size);
-		setAlignment(Pos.CENTER);
-
 		Label label = new Label(String.valueOf(number));
-		label.setMinSize(60, 60);
 		label.setAlignment(Pos.CENTER);
+		label.setMaxSize(size, size);
+		label.setMinSize(size, size);
 		label.getStyleClass().add("entry");
 		add(label, 0, 0);
 	}
 
+	public void changePossibleEntries(Set<Integer> possibleEntries) {
+		if (getChildren().size() != 9) {
+			return;
+		}
+
+		for (int i = 0; i < 9; i++) {
+			Label label = (Label) getChildren().get(i);
+			String entry;
+
+			if (possibleEntries.contains(i + 1)) {
+				entry = String.valueOf(i + 1);
+			} else {
+				entry = "";
+			}
+
+			label.setText(entry);
+		}
+	}
+
+	public void changeEntry(int number) {
+		if (getChildren().size() != 1) {
+			return;
+		}
+
+		Label label = (Label) getChildren().get(0);
+		label.setText(String.valueOf(number));
+	}
+
 	private void addMouseClick(Label label) {
 		label.setOnMouseClicked(e -> {
-			String numberString = ((Label) e.getSource()).getText();
+			Label clickedLabel = (Label) e.getSource();
+			String numberString = clickedLabel.getText();
+			boolean isLeftClick = e.getButton() == MouseButton.PRIMARY;
+			int cellId = row * 9 + column;
+			int labelPosition = getChildren().indexOf(clickedLabel);
 
-			if ("".equals(numberString)) {
+			if ("".equals(numberString) && !isLeftClick) {
 				return;
+			} else if ("".equals(numberString) && isLeftClick) {
+				cellListener.addEntryOption(labelPosition + 1, cellId);
 			} else if (e.getButton() == MouseButton.PRIMARY) {
 				int number = Integer.valueOf(numberString);
-				cellListener.updateValue(number, row * 9 + column);
+				cellListener.makeEntry(number, cellId);
 			} else if (e.getButton() == MouseButton.SECONDARY) {
 				int number = Integer.valueOf(numberString);
-				cellListener.removeEntryOption(number, row * 9 + column);
+				cellListener.removeEntryOption(number, cellId);
 			}
 		});
 	}

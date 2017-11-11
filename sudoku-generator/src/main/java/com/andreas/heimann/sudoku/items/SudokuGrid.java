@@ -93,14 +93,7 @@ public class SudokuGrid {
 
 		for (int i = 0; i < 9; i++) {
 			for (int j = 0; j < 9; j++) {
-				Cell oldCell = this.arrayGrid[i][j];
-
-				arrayGrid[i][j] = new Cell(oldCell.getNumber(),
-						oldCell.getRow(), oldCell.getColumn());
-				if (arrayGrid[i][j].getNumber() == 0) {
-					arrayGrid[i][j].clearCell();
-				}
-				arrayGrid[i][j].setSegment(oldCell.getSegment());
+				arrayGrid[i][j] = this.arrayGrid[i][j].copyCell();
 			}
 		}
 		sudokuGrid.setArrayGrid(arrayGrid);
@@ -122,7 +115,6 @@ public class SudokuGrid {
 								listGrid.get(j * 9 + offset + k + m * 27));
 						listGrid.get(j * 9 + offset + k + m * 27).setSegment(
 								m * 3 + l);
-						;
 					}
 				}
 

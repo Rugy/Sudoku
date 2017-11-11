@@ -22,34 +22,58 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 
 	private GridListener gridListener;
 	private List<EntryPane> cells;
-	private int size;
-	public static final int CELL_SIZE = 200;
+	private GridPane gridPane;
+	private Button solveGridButton;
+	private Button excludeEntriesButton;
+	private int size = 60;
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-
 		GridGuiController controller = new GridGuiController(this);
 		setGridListener(controller);
 
-		List<Cell> listGrid = gridListener.getListGridCopy();
+		makeWindowGridPane();
+		makeGridCells();
+		addSolveGridButton();
+		addExcludeEntriesButton();
 
-		GridPane gridPane = new GridPane();
+		Scene scene = new Scene(gridPane);
+		primaryStage.setScene(scene);
+		scene.getStylesheets().add(
+				getClass().getResource("Cell.css").toExternalForm());
+		primaryStage.show();
+	}
+
+	private void makeWindowGridPane() {
+		gridPane = new GridPane();
 		gridPane.setPadding(new Insets(10));
+
 		for (int i = 0; i < 9; i++) {
 			GridPane segmentGridPane = new GridPane();
 			segmentGridPane.getStyleClass().add("segment");
 			gridPane.add(segmentGridPane, i % 3, i / 3);
 		}
+	}
 
+	private void makeGridCells() {
 		cells = new ArrayList<>();
+		List<Cell> listGrid = gridListener.getListGridCopy();
+
 		for (int i = 0; i < 81; i++) {
 			Cell cell = listGrid.get(i);
 			int number = cell.getNumber();
 			int row = cell.getRow();
 			int column = cell.getColumn();
 			int segment = cell.getSegment();
+			Set<Integer> possibleEntries = cell.getPossibleEntries();
+			EntryPane entryPane;
 
-			EntryPane entryPane = new EntryPane(number, row, column, segment);
+			if (number == 0) {
+				entryPane = new EntryPane(size, possibleEntries, row, column,
+						segment);
+			} else {
+				entryPane = new EntryPane(size, number, row, column, segment);
+			}
 			entryPane.getStyleClass().add("entryPane");
 			entryPane.setCellListener(this);
 			cells.add(entryPane);
@@ -104,38 +128,36 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 						+ EntryPane.COLOR_NEUTRAL + ";");
 			});
 		}
+	}
 
-		Button showEntriesButton = new Button("Show Entries");
-		showEntriesButton.setId("showEntriesButton");
-		showEntriesButton.setOnAction(e -> {
-			for (int j = 0; j < 81; j++) {
-				int row = cells.get(j).getRow();
-				int column = cells.get(j).getColumn();
-				int segment = cells.get(j).getSegment();
-				Set<Integer> possibleEntries = listGrid.get(j)
-						.getPossibleEntries();
-
-				if (listGrid.get(row * 9 + column).getNumber() == 0) {
-					size = (int) ((GridPane) gridPane.getChildren()
-							.get(segment)).getHeight();
-					cells.get(row * 9 + column).changeToPossibleEntryPane(
-							possibleEntries, size / 3);
-				}
-			}
+	private void addSolveGridButton() {
+		solveGridButton = new Button("Solve Grid");
+		solveGridButton.setId("solveGridButton");
+		solveGridButton.setOnAction(e -> {
+			gridListener.solveGrid();
 		});
+
 		HBox buttonBox = new HBox();
 		buttonBox.setPadding(new Insets(25, 0, 0, 0));
 		buttonBox.setAlignment(Pos.CENTER);
-		buttonBox.getChildren().add(showEntriesButton);
+		buttonBox.getChildren().add(solveGridButton);
 
-		gridPane.add(buttonBox, 0, 3, 3, 1);
+		gridPane.add(buttonBox, 0, 3, 2, 1);
+	}
 
-		Scene scene = new Scene(gridPane);
+	private void addExcludeEntriesButton() {
+		excludeEntriesButton = new Button("Exclude Entries");
+		excludeEntriesButton.setId("excludeEntriesButton");
+		excludeEntriesButton.setOnAction(e -> {
+			gridListener.checkExcludeEntries();
+		});
 
-		primaryStage.setScene(scene);
-		scene.getStylesheets().add(
-				getClass().getResource("Cell.css").toExternalForm());
-		primaryStage.show();
+		HBox buttonBox = new HBox();
+		buttonBox.setPadding(new Insets(25, 0, 0, 0));
+		buttonBox.setAlignment(Pos.CENTER);
+		buttonBox.getChildren().add(excludeEntriesButton);
+
+		gridPane.add(buttonBox, 1, 3, 2, 1);
 	}
 
 	public static void main(String[] args) {
@@ -156,23 +178,38 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 
 		for (int i = 0; i < 81; i++) {
 			Cell cell = listGrid.get(i);
+			EntryPane entryPane = cells.get(i);
 			int number = cell.getNumber();
-			cells.get(i).changeToEntryPane(number, size / 3);
+			Set<Integer> possibleEntries = cell.getPossibleEntries();
+			int childrenCount = entryPane.getChildren().size();
+
+			if (childrenCount == 1) {
+				entryPane.changeEntry(number);
+			} else if (childrenCount == 9 && possibleEntries.size() == 0) {
+				entryPane.changeToEntryPane(number, size);
+			} else if (childrenCount == 9 && possibleEntries.size() > 0) {
+				entryPane.changePossibleEntries(possibleEntries);
+			}
 		}
 	}
 
 	@Override
 	public void updateCell(int cellId, Set<Integer> possibleEntries) {
-		cells.get(cellId).changeToPossibleEntryPane(possibleEntries, size / 3);
+		cells.get(cellId).changePossibleEntries(possibleEntries);
 	}
 
 	@Override
-	public void updateValue(int number, int cellId) {
-		gridListener.updateGrid(number, cellId);
+	public void makeEntry(int number, int cellId) {
+		gridListener.makeEntry(number, cellId);
 	}
 
 	@Override
 	public void removeEntryOption(int number, int cellId) {
 		gridListener.removePossibleEntry(number, cellId);
+	}
+
+	@Override
+	public void addEntryOption(int number, int cellId) {
+		gridListener.addPossibleEntry(number, cellId);
 	}
 }
