@@ -4,6 +4,7 @@ import java.util.Set;
 
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.GridPane;
 
 public class EntryPane extends GridPane {
@@ -82,8 +83,8 @@ public class EntryPane extends GridPane {
 		this.segment = segment;
 	}
 
-	public void changePossibleEntryPane(Set<Integer> possibleEntries, int size) {
-		getChildren().remove(0);
+	public void changeToPossibleEntryPane(Set<Integer> possibleEntries, int size) {
+		getChildren().removeAll(getChildren());
 
 		setMaxSize(size, size);
 		setMinSize(size, size);
@@ -105,7 +106,7 @@ public class EntryPane extends GridPane {
 		}
 	}
 
-	public void changeEntryPane(int number, int size) {
+	public void changeToEntryPane(int number, int size) {
 		getChildren().removeAll(getChildren());
 
 		setMaxSize(size, size);
@@ -125,9 +126,12 @@ public class EntryPane extends GridPane {
 
 			if ("".equals(numberString)) {
 				return;
-			} else {
+			} else if (e.getButton() == MouseButton.PRIMARY) {
 				int number = Integer.valueOf(numberString);
 				cellListener.updateValue(number, row * 9 + column);
+			} else if (e.getButton() == MouseButton.SECONDARY) {
+				int number = Integer.valueOf(numberString);
+				cellListener.removeEntryOption(number, row * 9 + column);
 			}
 		});
 	}

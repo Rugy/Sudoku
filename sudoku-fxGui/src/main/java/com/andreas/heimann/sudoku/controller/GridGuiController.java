@@ -1,7 +1,9 @@
 package com.andreas.heimann.sudoku.controller;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.andreas.heimann.sudoku.GridClearer;
 import com.andreas.heimann.sudoku.GridHelper;
@@ -24,11 +26,10 @@ public class GridGuiController implements GridListener {
 		GridClearer.clearIncrementally(sudokuGrid, Difficulty.ONE);
 		GridSolver.checkExcludeEntries(sudokuGrid,
 				GridSolver.getEmptyCells(sudokuGrid));
-		GridHelper.printGrid(sudokuGrid.getArrayGrid());
 	}
 
 	@Override
-	public List<Cell> getListGrid() {
+	public List<Cell> getListGridCopy() {
 		List<Cell> cells = new ArrayList<>();
 
 		for (Cell aCell : sudokuGrid.getListGrid()) {
@@ -44,5 +45,14 @@ public class GridGuiController implements GridListener {
 		GridSolver.checkExcludeEntries(sudokuGrid,
 				GridSolver.getEmptyCells(sudokuGrid));
 		view.updateGrid();
+	}
+
+	@Override
+	public void removePossibleEntry(int number, int cellId) {
+		Cell cell = sudokuGrid.getListGrid().get(cellId);
+		cell.deletePossibleEntry(number);
+		Set<Integer> possibleEntries = new HashSet<>(cell.getPossibleEntries());
+
+		view.updateCell(cellId, possibleEntries);
 	}
 }

@@ -22,7 +22,6 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 
 	private GridListener gridListener;
 	private List<EntryPane> cells;
-	private List<Cell> listGrid;
 	private int size;
 	public static final int CELL_SIZE = 200;
 
@@ -32,7 +31,7 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 		GridGuiController controller = new GridGuiController(this);
 		setGridListener(controller);
 
-		listGrid = gridListener.getListGrid();
+		List<Cell> listGrid = gridListener.getListGridCopy();
 
 		GridPane gridPane = new GridPane();
 		gridPane.setPadding(new Insets(10));
@@ -119,16 +118,11 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 				if (listGrid.get(row * 9 + column).getNumber() == 0) {
 					size = (int) ((GridPane) gridPane.getChildren()
 							.get(segment)).getHeight();
-					cells.get(row * 9 + column).changePossibleEntryPane(
+					cells.get(row * 9 + column).changeToPossibleEntryPane(
 							possibleEntries, size / 3);
-					// EntryPane entriesPane = new EntryPane(size / 3,
-					// possibleEntries, row, column, segment);
-					// entriesPane.getStyleClass().add("segment");
-					// ((GridPane) gridPane.getChildren().get(segment)).add(
-				// entriesPane, column % 3, row % 3);
+				}
 			}
-		}
-	})	;
+		});
 		HBox buttonBox = new HBox();
 		buttonBox.setPadding(new Insets(25, 0, 0, 0));
 		buttonBox.setAlignment(Pos.CENTER);
@@ -158,17 +152,27 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 
 	@Override
 	public void updateGrid() {
-		listGrid = gridListener.getListGrid();
+		List<Cell> listGrid = gridListener.getListGridCopy();
 
 		for (int i = 0; i < 81; i++) {
 			Cell cell = listGrid.get(i);
 			int number = cell.getNumber();
-			cells.get(i).changeEntryPane(number, size / 3);
+			cells.get(i).changeToEntryPane(number, size / 3);
 		}
+	}
+
+	@Override
+	public void updateCell(int cellId, Set<Integer> possibleEntries) {
+		cells.get(cellId).changeToPossibleEntryPane(possibleEntries, size / 3);
 	}
 
 	@Override
 	public void updateValue(int number, int cellId) {
 		gridListener.updateGrid(number, cellId);
+	}
+
+	@Override
+	public void removeEntryOption(int number, int cellId) {
+		gridListener.removePossibleEntry(number, cellId);
 	}
 }
