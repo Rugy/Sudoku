@@ -6,4 +6,8 @@ public interface ViewUpdateListener {
 	public void updateGrid();
 
 	public void updateCell(int cellId, Set<Integer> possibleEntries);
+
+	public void updateCell(int cellId, int number);
+
+	public void showWrongEntry(int cellId);
 }

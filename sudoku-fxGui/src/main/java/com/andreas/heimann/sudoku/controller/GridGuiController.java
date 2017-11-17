@@ -16,14 +16,19 @@ import com.andreas.heimann.sudoku.items.SudokuGrid;
 public class GridGuiController implements GridListener {
 
 	private SudokuGrid sudokuGrid;
+	private SudokuGrid solvedGrid;
 	private ViewUpdateListener view;
 
 	public GridGuiController(ViewUpdateListener view) {
 		this.view = view;
+		Difficulty difficulty = Difficulty.FOUR;
 
 		sudokuGrid = new SudokuGrid();
 		GridHelper.generateGrid(sudokuGrid);
-		GridClearer.clearIncrementally(sudokuGrid, Difficulty.FOUR);
+		GridClearer.clearIncrementally(sudokuGrid, difficulty);
+
+		solvedGrid = sudokuGrid.cloneSudokuGrid();
+		GridSolver.solveGrid(solvedGrid, difficulty);
 	}
 
 	@Override
@@ -38,9 +43,23 @@ public class GridGuiController implements GridListener {
 	}
 
 	@Override
+	public List<Cell> getSolvedGridCopy() {
+		List<Cell> cells = new ArrayList<>();
+
+		for (Cell aCell : solvedGrid.getListGrid()) {
+			cells.add(aCell.copyCell());
+		}
+
+		return cells;
+	}
+
+	@Override
 	public void makeEntry(int number, int cellId) {
 		sudokuGrid.getListGrid().get(cellId).setNumber(number);
-		view.updateGrid();
+		view.updateCell(cellId, number);
+		if (solvedGrid.getListGrid().get(cellId).getNumber() != number) {
+			view.showWrongEntry(cellId);
+		}
 	}
 
 	@Override

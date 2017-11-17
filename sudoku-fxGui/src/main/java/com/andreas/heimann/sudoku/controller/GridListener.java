@@ -7,6 +7,8 @@ import com.andreas.heimann.sudoku.items.Cell;
 public interface GridListener {
 	public List<Cell> getListGridCopy();
 
+	public List<Cell> getSolvedGridCopy();
+
 	public void makeEntry(int number, int cellId);
 
 	public void removePossibleEntry(int number, int cellId);

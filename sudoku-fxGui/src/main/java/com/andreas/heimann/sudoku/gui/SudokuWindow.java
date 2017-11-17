@@ -8,6 +8,7 @@ import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
@@ -26,6 +27,7 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 	private Button uniqueEntriesButton;
 	private Button uniqueRowColumnButton;
 	private Button entryCombinationButton;
+	private CheckBox showWrong;
 	private int size = 60;
 
 	@Override
@@ -40,6 +42,7 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 		addUniqueEntriesButton();
 		addUniqueRowColumnButton();
 		addEntryCombinationButton();
+		addShowWrongCheckBox();
 
 		Scene scene = new Scene(gridPane);
 		primaryStage.setScene(scene);
@@ -78,7 +81,7 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 			} else {
 				entryPane = new EntryPane(size, number, row, column, segment);
 			}
-			entryPane.getStyleClass().add("entryPane");
+			entryPane.getStyleClass().add("entry-pane");
 			entryPane.setCellListener(this);
 			cells.add(entryPane);
 			GridPane segmentGridPane = (GridPane) gridPane.getChildren().get(
@@ -189,6 +192,46 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 		gridPane.add(entryCombinationButton, 1, 4);
 	}
 
+	private void addShowWrongCheckBox() {
+		showWrong = new CheckBox("Reveal Wrong Entries");
+		showWrong.setOnAction((e) -> {
+			if (showWrong.isSelected()) {
+				showWrongEntries();
+			} else {
+				hideWrongEntries();
+			}
+		});
+
+		gridPane.add(showWrong, 2, 4);
+	}
+
+	private void showWrongEntries() {
+		List<Cell> listGrid = gridListener.getListGridCopy();
+		List<Cell> solvedGrid = gridListener.getSolvedGridCopy();
+
+		for (int i = 0; i < listGrid.size(); i++) {
+			boolean isZero = listGrid.get(i).getNumber() == 0;
+			boolean hasSameEntry = listGrid.get(i).getNumber() == solvedGrid
+					.get(i).getNumber();
+
+			if (!isZero && !hasSameEntry) {
+				cells.get(i).getStyleClass().add("wrong-entry");
+			}
+		}
+	}
+
+	public void showWrongEntry(int cellId) {
+		if (showWrong.isSelected()) {
+			cells.get(cellId).getStyleClass().add("wrong-entry");
+		}
+	}
+
+	private void hideWrongEntries() {
+		for (EntryPane aPane : cells) {
+			aPane.getStyleClass().remove("wrong-entry");
+		}
+	}
+
 	public static void main(String[] args) {
 		launch(args);
 	}
@@ -220,6 +263,11 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 				entryPane.changePossibleEntries(possibleEntries);
 			}
 		}
+	}
+
+	@Override
+	public void updateCell(int cellId, int number) {
+		cells.get(cellId).changeToEntryPane(number, size);
 	}
 
 	@Override
