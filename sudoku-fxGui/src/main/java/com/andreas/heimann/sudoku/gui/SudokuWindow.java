@@ -80,6 +80,8 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 						segment);
 			} else {
 				entryPane = new EntryPane(size, number, row, column, segment);
+				entryPane.getChildren().get(0).getStyleClass()
+						.add("initial-entry");
 			}
 			entryPane.getStyleClass().add("entry-pane");
 			entryPane.setCellListener(this);

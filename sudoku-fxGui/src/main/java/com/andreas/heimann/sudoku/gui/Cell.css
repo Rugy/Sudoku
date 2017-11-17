@@ -41,3 +41,7 @@
 	-fx-border-width: 3px;
 	-fx-border-color: red;
 }
+
+.initial-entry {
+	-fx-text-fill: #181;
+}
