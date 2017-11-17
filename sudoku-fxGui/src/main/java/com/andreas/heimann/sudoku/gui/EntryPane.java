@@ -115,6 +115,12 @@ public class EntryPane extends GridPane {
 		label.setMaxSize(size, size);
 		label.setMinSize(size, size);
 		label.getStyleClass().add("entry");
+		label.setOnMouseClicked(e -> {
+			if (e.getButton() == MouseButton.SECONDARY) {
+				cellListener.makeEntry(0, row * 9 + column);
+			}
+		});
+
 		add(label, 0, 0);
 	}
 
@@ -151,6 +157,7 @@ public class EntryPane extends GridPane {
 			Label clickedLabel = (Label) e.getSource();
 			String numberString = clickedLabel.getText();
 			boolean isLeftClick = e.getButton() == MouseButton.PRIMARY;
+			boolean isRightClick = e.getButton() == MouseButton.SECONDARY;
 			int cellId = row * 9 + column;
 			int labelPosition = getChildren().indexOf(clickedLabel);
 
@@ -158,10 +165,10 @@ public class EntryPane extends GridPane {
 				return;
 			} else if ("".equals(numberString) && isLeftClick) {
 				cellListener.addEntryOption(labelPosition + 1, cellId);
-			} else if (e.getButton() == MouseButton.PRIMARY) {
+			} else if (isLeftClick) {
 				int number = Integer.valueOf(numberString);
 				cellListener.makeEntry(number, cellId);
-			} else if (e.getButton() == MouseButton.SECONDARY) {
+			} else if (isRightClick) {
 				int number = Integer.valueOf(numberString);
 				cellListener.removeEntryOption(number, cellId);
 			}
