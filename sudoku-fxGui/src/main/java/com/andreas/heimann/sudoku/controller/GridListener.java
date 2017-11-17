@@ -11,6 +11,8 @@ public interface GridListener {
 
 	public void makeEntry(int number, int cellId);
 
+	public void removeEntry(int cellId);
+
 	public void removePossibleEntry(int number, int cellId);
 
 	public void addPossibleEntry(int number, int cellId);

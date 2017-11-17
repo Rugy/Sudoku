@@ -38,7 +38,7 @@
 }
 
 .wrong-entry {
-	-fx-border-width: 3px;
+	-fx-border-width: 2px;
 	-fx-border-color: red;
 }
 

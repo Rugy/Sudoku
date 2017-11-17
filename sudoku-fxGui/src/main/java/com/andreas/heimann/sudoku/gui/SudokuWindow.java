@@ -9,6 +9,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
@@ -215,8 +216,16 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 			boolean isZero = listGrid.get(i).getNumber() == 0;
 			boolean hasSameEntry = listGrid.get(i).getNumber() == solvedGrid
 					.get(i).getNumber();
+			boolean hasZeroAsEntry = false;
 
-			if (!isZero && !hasSameEntry) {
+			if (cells.get(i).getChildren().size() == 1) {
+				Label label = (Label) cells.get(i).getChildren().get(0);
+				if ("0".equals(label.getText())) {
+					hasZeroAsEntry = true;
+				}
+			}
+
+			if ((!isZero && !hasSameEntry) || hasZeroAsEntry) {
 				cells.get(i).getStyleClass().add("wrong-entry");
 			}
 		}
@@ -230,7 +239,7 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 
 	private void hideWrongEntries() {
 		for (EntryPane aPane : cells) {
-			aPane.getStyleClass().remove("wrong-entry");
+			aPane.getStyleClass().removeAll("wrong-entry");
 		}
 	}
 
@@ -265,6 +274,10 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 				entryPane.changePossibleEntries(possibleEntries);
 			}
 		}
+
+		if (showWrong.isSelected()) {
+			showWrongEntries();
+		}
 	}
 
 	@Override
@@ -274,7 +287,14 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 
 	@Override
 	public void updateCell(int cellId, Set<Integer> possibleEntries) {
-		cells.get(cellId).changePossibleEntries(possibleEntries);
+		EntryPane entryPane = cells.get(cellId);
+
+		if (entryPane.getChildren().size() == 1) {
+			entryPane.changeToPossibleEntryPane(possibleEntries, size);
+			cells.get(cellId).getStyleClass().remove("wrong-entry");
+		} else {
+			entryPane.changePossibleEntries(possibleEntries);
+		}
 	}
 
 	@Override
@@ -290,5 +310,10 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 	@Override
 	public void addEntryOption(int number, int cellId) {
 		gridListener.addPossibleEntry(number, cellId);
+	}
+
+	@Override
+	public void removeEntry(int cellId) {
+		gridListener.removeEntry(cellId);
 	}
 }

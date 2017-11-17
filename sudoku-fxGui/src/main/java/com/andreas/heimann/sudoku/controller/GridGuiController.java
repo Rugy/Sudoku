@@ -21,7 +21,7 @@ public class GridGuiController implements GridListener {
 
 	public GridGuiController(ViewUpdateListener view) {
 		this.view = view;
-		Difficulty difficulty = Difficulty.FOUR;
+		Difficulty difficulty = Difficulty.ONE;
 
 		sudokuGrid = new SudokuGrid();
 		GridHelper.generateGrid(sudokuGrid);
@@ -55,11 +55,19 @@ public class GridGuiController implements GridListener {
 
 	@Override
 	public void makeEntry(int number, int cellId) {
-		sudokuGrid.getListGrid().get(cellId).setNumber(number);
+		Cell cell = sudokuGrid.getListGrid().get(cellId);
+		cell.setNumber(number);
 		view.updateCell(cellId, number);
 		if (solvedGrid.getListGrid().get(cellId).getNumber() != number) {
 			view.showWrongEntry(cellId);
 		}
+	}
+
+	@Override
+	public void removeEntry(int cellId) {
+		Cell cell = sudokuGrid.getListGrid().get(cellId);
+		cell.clearCell();
+		view.updateCell(cellId, cell.getPossibleEntries());
 	}
 
 	@Override

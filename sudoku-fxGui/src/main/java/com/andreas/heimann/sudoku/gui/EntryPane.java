@@ -117,7 +117,7 @@ public class EntryPane extends GridPane {
 		label.getStyleClass().add("entry");
 		label.setOnMouseClicked(e -> {
 			if (e.getButton() == MouseButton.SECONDARY) {
-				cellListener.makeEntry(0, row * 9 + column);
+				cellListener.removeEntry(row * 9 + column);
 			}
 		});
 

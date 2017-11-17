@@ -6,4 +6,6 @@ public interface CellListener {
 	public void removeEntryOption(int number, int cellId);
 
 	public void addEntryOption(int number, int cellId);
+
+	public void removeEntry(int cellId);
 }
