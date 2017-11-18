@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.andreas.heimann.sudoku.GridClearer;
 import com.andreas.heimann.sudoku.GridHelper;
 import com.andreas.heimann.sudoku.GridSolver;
 import com.andreas.heimann.sudoku.gui.ViewUpdateListener;
@@ -24,8 +23,7 @@ public class GridGuiController implements GridListener {
 		Difficulty difficulty = Difficulty.ONE;
 
 		sudokuGrid = new SudokuGrid();
-		GridHelper.generateGrid(sudokuGrid);
-		GridClearer.clearIncrementally(sudokuGrid, difficulty);
+		GridHelper.importGrid(sudokuGrid);
 
 		solvedGrid = sudokuGrid.cloneSudokuGrid();
 		GridSolver.solveGrid(solvedGrid, difficulty);
@@ -117,8 +115,15 @@ public class GridGuiController implements GridListener {
 	}
 
 	@Override
+	public void checkXWing() {
+		GridSolver.checkXWing(sudokuGrid, GridSolver.getEmptyCells(sudokuGrid));
+		view.updateGrid();
+	}
+
+	@Override
 	public void solveGrid() {
-		GridSolver.solveGrid(sudokuGrid, Difficulty.FOUR);
+		GridSolver.solveGrid(sudokuGrid,
+				Difficulty.values()[Difficulty.values().length - 1]);
 		view.updateGrid();
 	}
 }

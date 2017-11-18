@@ -28,6 +28,7 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 	private Button uniqueEntriesButton;
 	private Button uniqueRowColumnButton;
 	private Button entryCombinationButton;
+	private Button xWingButton;
 	private CheckBox showWrong;
 	private int size = 60;
 
@@ -43,6 +44,7 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 		addUniqueEntriesButton();
 		addUniqueRowColumnButton();
 		addEntryCombinationButton();
+		addxWingButton();
 		addShowWrongCheckBox();
 
 		Scene scene = new Scene(gridPane);
@@ -193,6 +195,17 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 		});
 
 		gridPane.add(entryCombinationButton, 1, 4);
+	}
+
+	private void addxWingButton() {
+		xWingButton = new Button("X Wing");
+		xWingButton.setId("xWingButton");
+		xWingButton.getStyleClass().add("button");
+		xWingButton.setOnAction(e -> {
+			gridListener.checkXWing();
+		});
+
+		gridPane.add(xWingButton, 0, 5);
 	}
 
 	private void addShowWrongCheckBox() {

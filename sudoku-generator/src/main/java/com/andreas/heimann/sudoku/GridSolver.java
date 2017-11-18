@@ -58,6 +58,17 @@ public class GridSolver {
 				}
 			}
 
+			// Try Hard3
+			if (!madeEntries && difficulty.ordinal() > 3) {
+				checkXWing(sudokuGrid, emptyCellsStart);
+				madeEntries = makeEntries(emptyCellsStart);
+				if (madeEntries) {
+					if (sudokuGrid.getDifficulty().ordinal() < 4) {
+						sudokuGrid.setDifficulty(Difficulty.FIVE);
+					}
+				}
+			}
+
 			emptyCellsCurrent = emptyCellsStart;
 			emptyCellsStart = getEmptyCells(sudokuGrid);
 		}
@@ -313,6 +324,114 @@ public class GridSolver {
 							possibleEntriesCombination, aCellList));
 				}
 				break;
+			}
+		}
+	}
+
+	public static void checkXWing(SudokuGrid sudokuGrid, List<Cell> emptyCells) {
+		List<Cell> emptyCellsInRow = new ArrayList<>();
+		List<Cell> emptyCellsInColumn = new ArrayList<>();
+		List<Cell> xRow = new ArrayList<>();
+		List<Cell> xColumn = new ArrayList<>();
+
+		for (int entry = 0; entry < 9; entry++) {
+
+			for (int i = 0; i < 9; i++) {
+				for (Cell aCell : emptyCells) {
+					boolean hasEntry = aCell.getPossibleEntries().contains(
+							entry);
+
+					if (aCell.getRow() == i && hasEntry) {
+						emptyCellsInRow.add(aCell);
+					}
+					if (aCell.getColumn() == i && hasEntry) {
+						emptyCellsInColumn.add(aCell);
+					}
+				}
+
+				if (emptyCellsInRow.size() == 2) {
+					xRow.addAll(emptyCellsInRow);
+				}
+				if (emptyCellsInColumn.size() == 2) {
+					xColumn.addAll(emptyCellsInColumn);
+				}
+
+				emptyCellsInRow.clear();
+				emptyCellsInColumn.clear();
+			}
+			int xRowSize = xRow.size() / 2;
+			int xColSize = xColumn.size() / 2;
+
+			if (xRowSize > 1) {
+				checkXRowRemoval(entry, xRow, emptyCells);
+			}
+			if (xColSize > 1) {
+				checkXColRemoval(entry, xColumn, emptyCellsInColumn);
+			}
+
+			xRow.clear();
+			xColumn.clear();
+		}
+	}
+
+	private static void checkXRowRemoval(int entry, List<Cell> xRow,
+			List<Cell> emptyCells) {
+		int xSize = xRow.size() / 2;
+
+		for (int j = 0; j < xSize; j++) {
+			int colAOne = xRow.get(j * 2).getColumn();
+			int colATwo = xRow.get(j * 2 + 1).getColumn();
+			int rowA = xRow.get(j * 2).getRow();
+
+			for (int k = j + 1; k < xSize; k++) {
+				int colBOne = xRow.get(k * 2).getColumn();
+				int colBTwo = xRow.get(k * 2 + 1).getColumn();
+				int rowB = xRow.get(k * 2).getRow();
+
+				if (colAOne == colBOne && colATwo == colBTwo) {
+					for (Cell aCell : emptyCells) {
+						int col = aCell.getColumn();
+						int row = aCell.getRow();
+
+						if (col == colAOne && (row != rowA && row != rowB)) {
+							aCell.getPossibleEntries().remove(entry);
+						} else if (col == colATwo
+								&& (row != rowA && row != rowB)) {
+							aCell.getPossibleEntries().remove(entry);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	private static void checkXColRemoval(int entry, List<Cell> xColumn,
+			List<Cell> emptyCells) {
+		int xSize = xColumn.size() / 2;
+
+		for (int j = 0; j < xSize; j++) {
+			int rowAOne = xColumn.get(j * 2).getRow();
+			int rowATwo = xColumn.get(j * 2 + 1).getRow();
+			int colA = xColumn.get(j * 2).getRow();
+
+			for (int k = j + 1; k < xSize; k++) {
+				int rowBOne = xColumn.get(k * 2).getRow();
+				int rowBTwo = xColumn.get(k * 2 + 1).getRow();
+				int colB = xColumn.get(k * 2).getRow();
+
+				if (rowAOne == rowBOne && rowATwo == rowBTwo) {
+					for (Cell aCell : emptyCells) {
+						int col = aCell.getColumn();
+						int row = aCell.getRow();
+
+						if (row == rowAOne && (col != colA && col != colB)) {
+							aCell.getPossibleEntries().remove(entry);
+						} else if (row == rowATwo
+								&& (col != colA && col != colB)) {
+							aCell.getPossibleEntries().remove(entry);
+						}
+					}
+				}
 			}
 		}
 	}

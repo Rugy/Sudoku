@@ -25,5 +25,7 @@ public interface GridListener {
 
 	public void checkEntryCombinations();
 
+	public void checkXWing();
+
 	public void solveGrid();
 }
