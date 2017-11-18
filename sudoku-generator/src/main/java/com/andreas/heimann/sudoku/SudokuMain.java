@@ -13,11 +13,11 @@ public class SudokuMain {
 		Difficulty difficulty = Difficulty.FIVE;
 
 		SudokuGrid sudokuGrid = new SudokuGrid();
-		GridHelper.importGrid(sudokuGrid);
+		GridHelper.generateGrid(sudokuGrid);
+		GridClearer.clearIncrementally(sudokuGrid, difficulty);
 		GridSolver.solveGrid(sudokuGrid, difficulty);
 
 		GridHelper.printGrid(sudokuGrid.getArrayGrid());
-		System.out.println(sudokuGrid.getDifficulty());
 
 	}
 }

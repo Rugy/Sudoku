@@ -81,6 +81,10 @@ public class SudokuGrid {
 		this.solutionSteps = solutionSteps;
 	}
 
+	public Cell getCellFromId(Integer cellId) {
+		return listGrid.get(cellId);
+	}
+
 	public SudokuGrid cloneSudokuGrid() {
 		SudokuGrid sudokuGrid = new SudokuGrid();
 		Cell[][] arrayGrid = new Cell[FIELDSIZE][FIELDSIZE];

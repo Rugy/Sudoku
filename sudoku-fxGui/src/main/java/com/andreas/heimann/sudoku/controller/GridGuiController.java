@@ -20,10 +20,12 @@ public class GridGuiController implements GridListener {
 
 	public GridGuiController(ViewUpdateListener view) {
 		this.view = view;
-		Difficulty difficulty = Difficulty.ONE;
+		Difficulty difficulty = Difficulty.FIVE;
 
 		sudokuGrid = new SudokuGrid();
 		GridHelper.importGrid(sudokuGrid);
+		// GridHelper.generateGrid(sudokuGrid);
+		// GridClearer.clearIncrementally(sudokuGrid, difficulty);
 
 		solvedGrid = sudokuGrid.cloneSudokuGrid();
 		GridSolver.solveGrid(solvedGrid, difficulty);
@@ -115,8 +117,9 @@ public class GridGuiController implements GridListener {
 	}
 
 	@Override
-	public void checkXWing() {
-		GridSolver.checkXWing(sudokuGrid, GridSolver.getEmptyCells(sudokuGrid));
+	public void checkFish(int size) {
+		GridSolver.checkSmallFish(sudokuGrid,
+				GridSolver.getEmptyCells(sudokuGrid), size);
 		view.updateGrid();
 	}
 
