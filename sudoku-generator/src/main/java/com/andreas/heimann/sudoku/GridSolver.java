@@ -71,6 +71,17 @@ public class GridSolver {
 				}
 			}
 
+			// Try Remote Pairs
+			if (!madeEntries && difficulty.ordinal() > 4) {
+				checkRemotePairs(sudokuGrid, emptyCellsStart);
+				madeEntries = makeEntries(emptyCellsStart);
+				if (madeEntries) {
+					if (sudokuGrid.getDifficulty().ordinal() < 5) {
+						sudokuGrid.setDifficulty(Difficulty.SIX);
+					}
+				}
+			}
+
 			emptyCellsCurrent = emptyCellsStart;
 			emptyCellsStart = getEmptyCells(sudokuGrid);
 		}
@@ -96,20 +107,26 @@ public class GridSolver {
 
 				if (rowNumber != 0) {
 					if (aCell.deletePossibleEntry(rowNumber)) {
-						solutionSteps.add(new SolutionStep(aCell,
-								StepType.EXCLUDE_ROW, rowNumber));
+						List<Cell> reason = new ArrayList<>();
+						reason.add(arrayGrid[row][i]);
+						solutionSteps.add(new SolutionStep(aCell, rowNumber,
+								reason));
 					}
 				}
 				if (colNumber != 0) {
 					if (aCell.deletePossibleEntry(colNumber)) {
-						solutionSteps.add(new SolutionStep(aCell,
-								StepType.EXCLUDE_COLUMN, colNumber));
+						List<Cell> reason = new ArrayList<>();
+						reason.add(arrayGrid[i][col]);
+						solutionSteps.add(new SolutionStep(aCell, colNumber,
+								reason));
 					}
 				}
 				if (segNumber != 0) {
 					if (aCell.deletePossibleEntry(segNumber)) {
-						solutionSteps.add(new SolutionStep(aCell,
-								StepType.EXCLUDE_SEGMENT, segNumber));
+						List<Cell> reason = new ArrayList<>();
+						reason.add(segmentGrid.get(segment).get(i));
+						solutionSteps.add(new SolutionStep(aCell, segNumber,
+								reason));
 					}
 				}
 			}
@@ -472,6 +489,94 @@ public class GridSolver {
 					if (inRow && !inColumn && containsEntry) {
 						aCell.getPossibleEntries().remove(entry);
 					}
+				}
+			}
+		}
+	}
+
+	private static void checkRemotePairs(SudokuGrid sudokuGrid,
+			List<Cell> emptyCells) {
+		List<Cell> pairs = new ArrayList<>();
+
+		for (Cell aCell : emptyCells) {
+			if (aCell.getPossibleEntries().size() == 2) {
+				pairs.add(aCell);
+			}
+		}
+
+		while (pairs.size() != 0) {
+			List<Cell> uniquePairs = new ArrayList<>();
+			uniquePairs.add(pairs.remove(0));
+			Set<Integer> entriesOne = uniquePairs.get(0).getPossibleEntries();
+
+			for (int i = 0; i < pairs.size(); i++) {
+				Set<Integer> entriesTwo = pairs.get(i).getPossibleEntries();
+
+				if (entriesOne.containsAll(entriesTwo)) {
+					uniquePairs.add(pairs.remove(i));
+					i--;
+				}
+			}
+
+			for (int i = 0; i < uniquePairs.size(); i++) {
+				searchRemotePairs(uniquePairs, new ArrayList<>(), i, emptyCells);
+			}
+		}
+	}
+
+	private static List<Cell> searchRemotePairs(List<Cell> pairs,
+			List<Cell> linkedCells, int position, List<Cell> emptyCells) {
+		List<Cell> pairsCopy = new ArrayList<>(pairs);
+		int row = pairsCopy.get(position).getRow();
+		int col = pairsCopy.get(position).getColumn();
+		int seg = pairsCopy.get(position).getSegment();
+
+		linkedCells.add(pairsCopy.remove(position));
+		compareRemotePairs(linkedCells, emptyCells);
+
+		for (int i = 0; i < pairsCopy.size(); i++) {
+			boolean sameRow = row == pairsCopy.get(i).getRow();
+			boolean sameCol = col == pairsCopy.get(i).getColumn();
+			boolean sameSeg = seg == pairsCopy.get(i).getSegment();
+
+			if (sameRow || sameCol || sameSeg) {
+				searchRemotePairs(pairsCopy, linkedCells, i, emptyCells);
+			}
+		}
+
+		linkedCells.remove(linkedCells.size() - 1);
+
+		return linkedCells;
+	}
+
+	private static void compareRemotePairs(List<Cell> linkedCells,
+			List<Cell> emptyCells) {
+		if (linkedCells.size() % 2 == 0) {
+			Cell cellOne = linkedCells.get(0);
+			Cell cellTwo = linkedCells.get(linkedCells.size() - 1);
+
+			for (Cell aCell : emptyCells) {
+				if (linkedCells.contains(aCell)) {
+					continue;
+				}
+
+				boolean sameRowOne = aCell.getRow() == cellOne.getRow();
+				boolean sameColOne = aCell.getColumn() == cellOne.getColumn();
+				boolean sameSegOne = aCell.getSegment() == cellOne.getSegment();
+
+				boolean sameRowTwo = aCell.getRow() == cellTwo.getRow();
+				boolean sameColTwo = aCell.getColumn() == cellTwo.getColumn();
+				boolean sameSegTwo = aCell.getSegment() == cellTwo.getSegment();
+
+				if (sameRowOne && (sameColTwo || sameSegTwo)) {
+					aCell.getPossibleEntries().removeAll(
+							cellOne.getPossibleEntries());
+				} else if (sameColOne && (sameRowTwo || sameSegTwo)) {
+					aCell.getPossibleEntries().removeAll(
+							cellOne.getPossibleEntries());
+				} else if (sameSegOne && (sameRowTwo || sameColTwo)) {
+					aCell.getPossibleEntries().removeAll(
+							cellOne.getPossibleEntries());
 				}
 			}
 		}

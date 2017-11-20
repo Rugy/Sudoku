@@ -20,7 +20,7 @@ public class GridGuiController implements GridListener {
 
 	public GridGuiController(ViewUpdateListener view) {
 		this.view = view;
-		Difficulty difficulty = Difficulty.FIVE;
+		Difficulty difficulty = Difficulty.ONE;
 
 		sudokuGrid = new SudokuGrid();
 		GridHelper.importGrid(sudokuGrid);
@@ -128,5 +128,20 @@ public class GridGuiController implements GridListener {
 		GridSolver.solveGrid(sudokuGrid,
 				Difficulty.values()[Difficulty.values().length - 1]);
 		view.updateGrid();
+	}
+
+	@Override
+	public void excludeCount() {
+		SudokuGrid copy = sudokuGrid.cloneSudokuGrid();
+		GridSolver.checkExcludeEntries(copy, GridSolver.getEmptyCells(copy));
+		int excludes = 0;
+
+		for (int i = 0; i < sudokuGrid.getListGrid().size(); i++) {
+			excludes += sudokuGrid.getListGrid().get(i).getPossibleEntries()
+					.size();
+			excludes -= copy.getListGrid().get(i).getPossibleEntries().size();
+		}
+
+		view.updateExcludes(excludes);
 	}
 }

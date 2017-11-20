@@ -30,6 +30,8 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 	private Button entryCombinationButton;
 	private Button xWingButton;
 	private CheckBox showWrong;
+	private Label excludeCount;
+	private Button excludeCountButton;
 	private int size = 60;
 
 	@Override
@@ -46,6 +48,7 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 		addEntryCombinationButton();
 		addxWingButton();
 		addShowWrongCheckBox();
+		addExcludeCount();
 
 		Scene scene = new Scene(gridPane);
 		primaryStage.setScene(scene);
@@ -220,6 +223,23 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 		});
 
 		gridPane.add(showWrong, 2, 4);
+	}
+
+	private void addExcludeCount() {
+		excludeCount = new Label();
+		gridPane.add(excludeCount, 1, 5);
+
+		excludeCountButton = new Button("ExcludeCount");
+		excludeCountButton.setOnAction(e -> {
+			gridListener.excludeCount();
+		});
+
+		gridPane.add(excludeCountButton, 2, 5);
+	}
+
+	@Override
+	public void updateExcludes(int count) {
+		excludeCount.setText(String.valueOf(count));
 	}
 
 	private void showWrongEntries() {

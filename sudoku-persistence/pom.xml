@@ -9,10 +9,10 @@
     <version>1.0-SNAPSHOT</version>
   </parent>
 	
-  <artifactId>sudoku-fxGui</artifactId>
-  <name>Sudoku FxGui</name>
+  <artifactId>sudoku-persistence</artifactId>
+  <name>Sudoku MySQL</name>
   <url>http://maven.apache.org</url>
-  
+	
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
@@ -25,5 +25,15 @@
 			<groupId>com.andreas.heimann.sudoku</groupId>
 			<version>1.0-SNAPSHOT</version>
     </dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-core</artifactId>
+			<version>5.2.11.Final</version>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-annotations</artifactId>
+			<version>3.5.6-Final</version>
+		</dependency>
   </dependencies>
 </project>

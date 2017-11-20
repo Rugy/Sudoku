@@ -13,6 +13,7 @@
 	<modules>
 		<module>sudoku-generator</module>
     <module>sudoku-fxGui</module>
+    <module>sudoku-persistence</module>
   </modules>
 	
   <dependencies>

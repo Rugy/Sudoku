@@ -28,4 +28,6 @@ public interface GridListener {
 	public void checkFish(int size);
 
 	public void solveGrid();
+
+	public void excludeCount();
 }

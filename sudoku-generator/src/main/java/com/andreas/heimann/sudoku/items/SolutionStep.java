@@ -8,32 +8,31 @@ public class SolutionStep {
 	private Cell cell;
 	private StepType stepType;
 	private String description;
-	private int number;
+	private int entry;
 	private int uniqueField;
 	private int segment;
 	private Set<Integer> entries;
-	private List<Cell> cells;
+	private List<Cell> reason;
 
-	public SolutionStep(Cell cell, StepType stepType, int number) {
+	public SolutionStep(Cell cell, StepType stepType, int entry) {
 		this.cell = cell;
 		this.stepType = stepType;
-		this.number = number;
+		this.entry = entry;
 
 		if (stepType == StepType.EXCLUDE_ROW
 				|| stepType == StepType.EXCLUDE_COLUMN
 				|| stepType == StepType.EXCLUDE_SEGMENT) {
-			description = "Number " + number + " already in "
+			description = "Number " + entry + " already in "
 					+ stepType.toString().substring(8).toLowerCase()
 					+ ". Removed from Cell(" + cell.getRow() + ","
 					+ cell.getColumn() + ")";
 		}
 	}
 
-	public SolutionStep(Cell cell, StepType stepType, int number,
-			int uniqueField) {
+	public SolutionStep(Cell cell, StepType stepType, int entry, int uniqueField) {
 		this.cell = cell;
 		this.stepType = stepType;
-		this.number = number;
+		this.entry = entry;
 		this.uniqueField = uniqueField;
 		String fieldDescription = stepType.toString().substring(7)
 				.toLowerCase();
@@ -41,18 +40,18 @@ public class SolutionStep {
 		if (stepType == StepType.UNIQUE_ROW
 				|| stepType == StepType.UNIQUE_COLUMN
 				|| stepType == StepType.UNIQUE_SEGMENT) {
-			description = "Number " + number + " is the only option in "
+			description = "Number " + entry + " is the only option in "
 					+ fieldDescription + " " + uniqueField
 					+ ". Removed from Cells around Cell(" + cell.getRow() + ","
 					+ cell.getColumn() + ")";
 		}
 	}
 
-	public SolutionStep(Cell cell, StepType stepType, int number,
+	public SolutionStep(Cell cell, StepType stepType, int entry,
 			int uniqueField, int segment) {
 		this.cell = cell;
 		this.stepType = stepType;
-		this.number = number;
+		this.entry = entry;
 		this.uniqueField = uniqueField;
 		this.segment = segment;
 		String fieldDescription = stepType.toString().substring(14)
@@ -60,7 +59,7 @@ public class SolutionStep {
 
 		if (stepType == StepType.UNIQUE_SEGMENTROW
 				|| stepType == StepType.UNIQUE_SEGMENTCOLUMN) {
-			description = "Number " + number + " has to be in "
+			description = "Number " + entry + " has to be in "
 					+ fieldDescription + " " + uniqueField + " in segment "
 					+ segment + ". Removed from Cell in same "
 					+ fieldDescription + " Cell(" + cell.getRow() + ","
@@ -74,7 +73,7 @@ public class SolutionStep {
 		this.stepType = stepType;
 		this.uniqueField = uniqueField;
 		this.entries = entries;
-		this.cells = cells;
+		this.reason = cells;
 		String fieldDescription = stepType.toString().substring(17)
 				.toLowerCase();
 		StringBuilder cellDescription = new StringBuilder();
@@ -91,6 +90,12 @@ public class SolutionStep {
 					+ cellDescription + ". Removed from Cell(" + cell.getRow()
 					+ "," + cell.getColumn() + ")";
 		}
+	}
+
+	public SolutionStep(Cell cell, int entry, List<Cell> reason) {
+		this.cell = cell;
+		this.entry = entry;
+		this.reason = reason;
 	}
 
 	public Cell getCell() {
@@ -117,12 +122,12 @@ public class SolutionStep {
 		this.description = description;
 	}
 
-	public int getNumber() {
-		return number;
+	public int getEntry() {
+		return entry;
 	}
 
-	public void setNumber(int number) {
-		this.number = number;
+	public void setEntry(int entry) {
+		this.entry = entry;
 	}
 
 	public int getUniqueField() {
@@ -149,12 +154,12 @@ public class SolutionStep {
 		this.entries = entries;
 	}
 
-	public List<Cell> getCells() {
-		return cells;
+	public List<Cell> getReason() {
+		return reason;
 	}
 
-	public void setCells(List<Cell> cells) {
-		this.cells = cells;
+	public void setReason(List<Cell> reason) {
+		this.reason = reason;
 	}
 
 }

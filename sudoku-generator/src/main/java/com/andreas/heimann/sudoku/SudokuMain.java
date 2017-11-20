@@ -10,11 +10,10 @@ public class SudokuMain {
 
 	public static void main(String[] args) {
 
-		Difficulty difficulty = Difficulty.FIVE;
+		Difficulty difficulty = Difficulty.SIX;
 
 		SudokuGrid sudokuGrid = new SudokuGrid();
-		GridHelper.generateGrid(sudokuGrid);
-		GridClearer.clearIncrementally(sudokuGrid, difficulty);
+		GridHelper.importGrid(sudokuGrid);
 		GridSolver.solveGrid(sudokuGrid, difficulty);
 
 		GridHelper.printGrid(sudokuGrid.getArrayGrid());

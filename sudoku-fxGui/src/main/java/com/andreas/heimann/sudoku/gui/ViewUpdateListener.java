@@ -10,4 +10,6 @@ public interface ViewUpdateListener {
 	public void updateCell(int cellId, int number);
 
 	public void showWrongEntry(int cellId);
+
+	public void updateExcludes(int count);
 }
