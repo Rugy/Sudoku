@@ -12,6 +12,8 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.RowConstraints;
 import javafx.stage.Stage;
 
 import com.andreas.heimann.sudoku.controller.GridGuiController;
@@ -25,6 +27,8 @@ import com.andreas.heimann.sudoku.items.RuleType;
 public class SudokuWindow extends Application implements ViewUpdateListener,
 		CellListener {
 
+	private static final int RULES_COUNT = 9;
+
 	private GridListener gridListener;
 	private List<EntryPane> cells;
 	private GridPane windowGridPane;
@@ -36,7 +40,9 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 	private RuleLabel uniqueEntriesLabel;
 	private RuleLabel uniqueRowColumnLabel;
 	private RuleLabel entryCombinationLabel;
-	private RuleLabel fishLabel;
+	private RuleLabel xWingLabel;
+	private RuleLabel swordFishLabel;
+	private RuleLabel jellyFishLabel;
 	private RuleLabel remotePairsLabel;
 	private RuleLabel uniqueRectangleLabel;
 	private List<RuleLabel> ruleLabels = new ArrayList<>();
@@ -56,7 +62,9 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 		addUniqueEntriesLabel();
 		addUniqueRowColumnLabel();
 		addEntryCombinationLabel();
-		addfishLabel();
+		addxWingLabel();
+		addSwordFishLabel();
+		addJellyFishLabel();
 		addRemotePairsLabel();
 		addUniqueRectangleLabel();
 		addSolveGridButton();
@@ -86,12 +94,21 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 		windowGridPane.add(sudokuGridPane, 0, 0);
 
 		rulesGridPane = new GridPane();
-		rulesGridPane.setVgap(20);
+		rulesGridPane.setVgap(5);
 		rulesGridPane.setPadding(new Insets(10));
+
+		for (int i = 0; i < RULES_COUNT; i++) {
+			RowConstraints rowConstrait = new RowConstraints();
+			rowConstrait.setFillHeight(true);
+			rowConstrait.setVgrow(Priority.ALWAYS);
+			rulesGridPane.getRowConstraints().add(rowConstrait);
+		}
+
 		windowGridPane.add(rulesGridPane, 1, 0);
 
 		optionsGridPane = new GridPane();
 		optionsGridPane.setPadding(new Insets(10));
+		optionsGridPane.setHgap(10);
 		windowGridPane.add(optionsGridPane, 0, 1, 2, 1);
 	}
 
@@ -236,20 +253,52 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 		rulesGridPane.add(entryCombinationLabel, 0, 3);
 	}
 
-	private void addfishLabel() {
-		RuleType ruleType = RuleType.FISH;
+	private void addxWingLabel() {
+		RuleType ruleType = RuleType.X_WING;
 
-		fishLabel = new RuleLabel("-", ruleType);
-		fishLabel.setId("fishLabel");
-		fishLabel.getStyleClass().add("rule-label");
-		fishLabel.setOnMouseClicked(e -> {
+		xWingLabel = new RuleLabel("-", ruleType);
+		xWingLabel.setId("xWingLabel");
+		xWingLabel.getStyleClass().add("rule-label");
+		xWingLabel.setOnMouseClicked(e -> {
 			gridListener.applyRule(ruleType);
 		});
-		Tooltip tooltip = new Tooltip("Fish");
-		fishLabel.setTooltip(tooltip);
+		Tooltip tooltip = new Tooltip("X-Wing");
+		xWingLabel.setTooltip(tooltip);
 
-		ruleLabels.add(fishLabel);
-		rulesGridPane.add(fishLabel, 0, 4);
+		ruleLabels.add(xWingLabel);
+		rulesGridPane.add(xWingLabel, 0, 4);
+	}
+
+	private void addSwordFishLabel() {
+		RuleType ruleType = RuleType.SWORDFISH;
+
+		swordFishLabel = new RuleLabel("-", ruleType);
+		swordFishLabel.setId("swordFishLabel");
+		swordFishLabel.getStyleClass().add("rule-label");
+		swordFishLabel.setOnMouseClicked(e -> {
+			gridListener.applyRule(ruleType);
+		});
+		Tooltip tooltip = new Tooltip("Swordfish");
+		swordFishLabel.setTooltip(tooltip);
+
+		ruleLabels.add(swordFishLabel);
+		rulesGridPane.add(swordFishLabel, 0, 5);
+	}
+
+	private void addJellyFishLabel() {
+		RuleType ruleType = RuleType.JELLYFISH;
+
+		jellyFishLabel = new RuleLabel("-", ruleType);
+		jellyFishLabel.setId("jellyFishLabel");
+		jellyFishLabel.getStyleClass().add("rule-label");
+		jellyFishLabel.setOnMouseClicked(e -> {
+			gridListener.applyRule(ruleType);
+		});
+		Tooltip tooltip = new Tooltip("Jellyfish");
+		jellyFishLabel.setTooltip(tooltip);
+
+		ruleLabels.add(jellyFishLabel);
+		rulesGridPane.add(jellyFishLabel, 0, 6);
 	}
 
 	private void addRemotePairsLabel() {
@@ -265,7 +314,7 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 		remotePairsLabel.setTooltip(tooltip);
 
 		ruleLabels.add(remotePairsLabel);
-		rulesGridPane.add(remotePairsLabel, 0, 5);
+		rulesGridPane.add(remotePairsLabel, 0, 7);
 	}
 
 	private void addUniqueRectangleLabel() {
@@ -281,7 +330,7 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 		uniqueRectangleLabel.setTooltip(tooltip);
 
 		ruleLabels.add(uniqueRectangleLabel);
-		rulesGridPane.add(uniqueRectangleLabel, 0, 6);
+		rulesGridPane.add(uniqueRectangleLabel, 0, 8);
 	}
 
 	private void addSolveGridButton() {
@@ -319,15 +368,6 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 		optionsGridPane.add(showWrong, 2, 0);
 	}
 
-	private void addShowExclusionsCheckBox() {
-		showExclusions = new CheckBox("Show possible Exclusions");
-		showExclusions.setOnAction(e -> {
-			gridListener.getRuleExclusions(ruleLabels);
-		});
-
-		optionsGridPane.add(showExclusions, 3, 0);
-	}
-
 	private void showWrongEntries() {
 		List<Cell> listGrid = gridListener.getListGridCopy();
 		List<Cell> solvedGrid = gridListener.getSolvedGridCopy();
@@ -360,6 +400,25 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 	private void hideWrongEntries() {
 		for (EntryPane aPane : cells) {
 			aPane.getStyleClass().removeAll("wrong-entry");
+		}
+	}
+
+	private void addShowExclusionsCheckBox() {
+		showExclusions = new CheckBox("Show possible Exclusions");
+		showExclusions.setOnAction(e -> {
+			if (showExclusions.isSelected()) {
+				gridListener.getRuleExclusions(ruleLabels);
+			} else {
+				hideExclusions();
+			}
+		});
+
+		optionsGridPane.add(showExclusions, 3, 0);
+	}
+
+	private void hideExclusions() {
+		for (RuleLabel aLabel : ruleLabels) {
+			aLabel.setText("-");
 		}
 	}
 
@@ -399,13 +458,18 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 			showWrongEntries();
 		}
 
-		gridListener.getRuleExclusions(ruleLabels);
+		if (showExclusions.isSelected()) {
+			gridListener.getRuleExclusions(ruleLabels);
+		}
 	}
 
 	@Override
 	public void updateCell(int cellId, int number) {
 		cells.get(cellId).changeToEntryPane(number, size);
-		gridListener.getRuleExclusions(ruleLabels);
+
+		if (showExclusions.isSelected()) {
+			gridListener.getRuleExclusions(ruleLabels);
+		}
 	}
 
 	@Override
@@ -418,7 +482,10 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 		} else {
 			entryPane.changePossibleEntries(possibleEntries);
 		}
-		gridListener.getRuleExclusions(ruleLabels);
+
+		if (showExclusions.isSelected()) {
+			gridListener.getRuleExclusions(ruleLabels);
+		}
 	}
 
 	@Override

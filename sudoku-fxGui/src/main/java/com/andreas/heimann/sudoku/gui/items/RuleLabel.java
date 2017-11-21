@@ -8,7 +8,7 @@ import com.andreas.heimann.sudoku.items.RuleType;
 public class RuleLabel extends Label {
 
 	private RuleType ruleType;
-	private static final int MIN_SIZE = 50;
+	private static final int MIN_SIZE = 40;
 
 	public RuleLabel(RuleType ruleType) {
 		super();

@@ -49,5 +49,6 @@
 .rule-label {
 	-fx-font-size: 20px;
 	-fx-border-width: 2px;
-	-fx-border-color: black;
+	-fx-border-color: grey;
+	-fx-border-radius: 2px;
 }

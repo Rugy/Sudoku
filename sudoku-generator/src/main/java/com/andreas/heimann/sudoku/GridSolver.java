@@ -840,9 +840,11 @@ public class GridSolver {
 			checkUniqueRowColumn(sudokuGrid, emptyCells);
 		} else if (ruleType == RuleType.ENTRY_COMBINATION) {
 			checkEntryCombinations(sudokuGrid, emptyCells);
-		} else if (ruleType == RuleType.FISH) {
+		} else if (ruleType == RuleType.X_WING) {
 			checkSmallFish(sudokuGrid, emptyCells, 2);
+		} else if (ruleType == RuleType.SWORDFISH) {
 			checkSmallFish(sudokuGrid, emptyCells, 3);
+		} else if (ruleType == RuleType.JELLYFISH) {
 			checkSmallFish(sudokuGrid, emptyCells, 4);
 		} else if (ruleType == RuleType.REMOTE_PAIRS) {
 			checkRemotePairs(sudokuGrid, emptyCells);
