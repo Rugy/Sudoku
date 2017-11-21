@@ -207,6 +207,9 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 		xWingButton.setOnAction(e -> {
 			gridListener.checkFish(2);
 			gridListener.checkFish(3);
+			gridListener.checkFish(4);
+			gridListener.checkRemotePairs();
+			gridListener.checkUniqueRectangle();
 		});
 
 		gridPane.add(xWingButton, 0, 5);

@@ -124,6 +124,20 @@ public class GridGuiController implements GridListener {
 	}
 
 	@Override
+	public void checkRemotePairs() {
+		GridSolver.checkRemotePairs(sudokuGrid,
+				GridSolver.getEmptyCells(sudokuGrid));
+		view.updateGrid();
+	}
+
+	@Override
+	public void checkUniqueRectangle() {
+		GridSolver.checkUniqueRectangle(sudokuGrid,
+				GridSolver.getEmptyCells(sudokuGrid));
+		view.updateGrid();
+	}
+
+	@Override
 	public void solveGrid() {
 		GridSolver.solveGrid(sudokuGrid,
 				Difficulty.values()[Difficulty.values().length - 1]);

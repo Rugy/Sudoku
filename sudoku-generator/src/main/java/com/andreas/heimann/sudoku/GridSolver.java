@@ -30,6 +30,7 @@ public class GridSolver {
 				checkUniqueEntry(sudokuGrid, emptyCellsStart);
 				madeEntries = makeEntries(emptyCellsStart);
 				if (madeEntries) {
+					System.out.println("USED UNIQUEENTRY");
 					if (sudokuGrid.getDifficulty().ordinal() < 1) {
 						sudokuGrid.setDifficulty(Difficulty.TWO);
 					}
@@ -41,6 +42,7 @@ public class GridSolver {
 				checkUniqueRowColumn(sudokuGrid, emptyCellsStart);
 				madeEntries = makeEntries(emptyCellsStart);
 				if (madeEntries) {
+					System.out.println("USED UNIQUEROWCOL");
 					if (sudokuGrid.getDifficulty().ordinal() < 2) {
 						sudokuGrid.setDifficulty(Difficulty.THREE);
 					}
@@ -52,6 +54,7 @@ public class GridSolver {
 				checkEntryCombinations(sudokuGrid, emptyCellsStart);
 				madeEntries = makeEntries(emptyCellsStart);
 				if (madeEntries) {
+					System.out.println("USED ENTRYCOMBINATION");
 					if (sudokuGrid.getDifficulty().ordinal() < 3) {
 						sudokuGrid.setDifficulty(Difficulty.FOUR);
 					}
@@ -65,6 +68,7 @@ public class GridSolver {
 				checkSmallFish(sudokuGrid, emptyCellsStart, 4);
 				madeEntries = makeEntries(emptyCellsStart);
 				if (madeEntries) {
+					System.out.println("USED FISH");
 					if (sudokuGrid.getDifficulty().ordinal() < 4) {
 						sudokuGrid.setDifficulty(Difficulty.FIVE);
 					}
@@ -76,6 +80,19 @@ public class GridSolver {
 				checkRemotePairs(sudokuGrid, emptyCellsStart);
 				madeEntries = makeEntries(emptyCellsStart);
 				if (madeEntries) {
+					System.out.println("USED REMOTE PAIRS");
+					if (sudokuGrid.getDifficulty().ordinal() < 5) {
+						sudokuGrid.setDifficulty(Difficulty.SIX);
+					}
+				}
+			}
+
+			// Try Unique Rectangle
+			if (!madeEntries && difficulty.ordinal() > 4) {
+				checkUniqueRectangle(sudokuGrid, emptyCellsStart);
+				madeEntries = makeEntries(emptyCellsStart);
+				if (madeEntries) {
+					System.out.println("USED UNIQUE RECTANGLES");
 					if (sudokuGrid.getDifficulty().ordinal() < 5) {
 						sudokuGrid.setDifficulty(Difficulty.SIX);
 					}
@@ -494,7 +511,7 @@ public class GridSolver {
 		}
 	}
 
-	private static void checkRemotePairs(SudokuGrid sudokuGrid,
+	public static void checkRemotePairs(SudokuGrid sudokuGrid,
 			List<Cell> emptyCells) {
 		List<Cell> pairs = new ArrayList<>();
 
@@ -524,7 +541,7 @@ public class GridSolver {
 		}
 	}
 
-	private static List<Cell> searchRemotePairs(List<Cell> pairs,
+	private static void searchRemotePairs(List<Cell> pairs,
 			List<Cell> linkedCells, int position, List<Cell> emptyCells) {
 		List<Cell> pairsCopy = new ArrayList<>(pairs);
 		int row = pairsCopy.get(position).getRow();
@@ -545,8 +562,6 @@ public class GridSolver {
 		}
 
 		linkedCells.remove(linkedCells.size() - 1);
-
-		return linkedCells;
 	}
 
 	private static void compareRemotePairs(List<Cell> linkedCells,
@@ -577,6 +592,156 @@ public class GridSolver {
 				} else if (sameSegOne && (sameRowTwo || sameColTwo)) {
 					aCell.getPossibleEntries().removeAll(
 							cellOne.getPossibleEntries());
+				}
+			}
+		}
+	}
+
+	public static void checkUniqueRectangle(SudokuGrid sudokuGrid,
+			List<Cell> emptyCells) {
+		List<Cell> pairs = new ArrayList<>();
+
+		for (Cell aCell : emptyCells) {
+			if (aCell.getPossibleEntries().size() == 2) {
+				pairs.add(aCell);
+			}
+		}
+
+		while (pairs.size() != 0) {
+			List<Cell> uniquePairs = new ArrayList<>();
+			uniquePairs.add(pairs.remove(0));
+			Set<Integer> entriesOne = uniquePairs.get(0).getPossibleEntries();
+
+			for (int i = 0; i < pairs.size(); i++) {
+				Set<Integer> entriesTwo = pairs.get(i).getPossibleEntries();
+
+				if (entriesOne.containsAll(entriesTwo)) {
+					uniquePairs.add(pairs.remove(i));
+					i--;
+				}
+			}
+
+			for (int i = 0; i < uniquePairs.size(); i++) {
+				Cell cellOne = uniquePairs.get(i);
+
+				for (int j = i + 1; j < uniquePairs.size(); j++) {
+					Cell cellTwo = uniquePairs.get(j);
+
+					searchRectangle(cellOne, cellTwo, emptyCells);
+				}
+			}
+
+		}
+	}
+
+	private static void searchRectangle(Cell cellOne, Cell cellTwo,
+			List<Cell> emptyCells) {
+		List<Cell> rectangleCells = new ArrayList<>();
+		rectangleCells.add(cellOne);
+		rectangleCells.add(cellTwo);
+
+		for (int i = 0; i < emptyCells.size(); i++) {
+			Cell cellThree = emptyCells.get(i);
+			boolean containsEntries = cellThree.getPossibleEntries()
+					.containsAll(cellOne.getPossibleEntries());
+			int twoEntries = 2;
+
+			if (!containsEntries || rectangleCells.contains(cellThree)) {
+				continue;
+			}
+
+			Set<Integer> rows = new HashSet<>();
+			Set<Integer> cols = new HashSet<>();
+			Set<Integer> segs = new HashSet<>();
+			Set<Integer> entries = new HashSet<>();
+			rectangleCells.add(cellThree);
+
+			for (Cell aCell : rectangleCells) {
+				rows.add(aCell.getRow());
+				cols.add(aCell.getColumn());
+				segs.add(aCell.getSegment());
+				entries.addAll(aCell.getPossibleEntries());
+			}
+
+			if (cellThree.getPossibleEntries().size() == 2) {
+				twoEntries++;
+			}
+
+			for (int j = i + 1; j < emptyCells.size(); j++) {
+				Cell cellFour = emptyCells.get(j);
+				containsEntries = cellFour.getPossibleEntries().containsAll(
+						cellOne.getPossibleEntries());
+				int twoEntriesNext = twoEntries;
+
+				if (!containsEntries || rectangleCells.contains(cellFour)) {
+					continue;
+				}
+
+				rectangleCells.add(cellFour);
+
+				rows.add(cellFour.getRow());
+				cols.add(cellFour.getColumn());
+				segs.add(cellFour.getSegment());
+				entries.addAll(cellFour.getPossibleEntries());
+
+				if (cellFour.getPossibleEntries().size() == 2) {
+					twoEntriesNext++;
+				}
+
+				if (rows.size() == 2 && cols.size() == 2 && segs.size() == 2) {
+
+					for (Cell aCell : rectangleCells) {
+						if (aCell.getPossibleEntries().size() > 2
+								&& twoEntriesNext == 3) {
+							aCell.getPossibleEntries().removeAll(
+									cellOne.getPossibleEntries());
+						}
+					}
+
+					if (twoEntriesNext == 2 && entries.size() == 3) {
+						removeOutsideRectangle(rectangleCells, emptyCells);
+					}
+				}
+
+				rectangleCells.remove(cellFour);
+			}
+
+			rectangleCells.remove(cellThree);
+		}
+	}
+
+	private static void removeOutsideRectangle(List<Cell> rectangleCells,
+			List<Cell> emptyCells) {
+		Cell cellOne = rectangleCells.get(0);
+		Cell cellThree = rectangleCells.get(2);
+		Cell cellFour = rectangleCells.get(3);
+
+		Set<Integer> removal = new HashSet<>(cellThree.getPossibleEntries());
+		removal.removeAll(cellOne.getPossibleEntries());
+
+		if (cellThree.getRow() == cellFour.getRow()) {
+			for (Cell aCell : emptyCells) {
+				if (aCell.getRow() == cellThree.getRow()
+						&& !rectangleCells.contains(aCell)) {
+					aCell.getPossibleEntries().removeAll(removal);
+				}
+			}
+		}
+
+		if (cellThree.getColumn() == cellFour.getColumn()) {
+			for (Cell aCell : emptyCells) {
+				if (aCell.getColumn() == cellThree.getColumn()
+						&& !rectangleCells.contains(aCell)) {
+					aCell.getPossibleEntries().removeAll(removal);
+				}
+			}
+		}
+
+		if (cellThree.getSegment() == cellFour.getSegment()) {
+			for (Cell aCell : emptyCells) {
+				if (aCell.getSegment() == cellThree.getSegment()
+						&& !rectangleCells.contains(aCell)) {
+					aCell.getPossibleEntries().removeAll(removal);
 				}
 			}
 		}
