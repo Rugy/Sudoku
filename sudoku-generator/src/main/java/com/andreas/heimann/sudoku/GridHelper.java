@@ -319,7 +319,7 @@ public class GridHelper {
 
 	public static void importGrid(SudokuGrid sudokuGrid) {
 		Cell[][] arrayGrid = sudokuGrid.getArrayGrid();
-		String gridString = "4.......2.3.2.7.5..2.8.1.3.1...7...97.3...2.16...2...7.7.4.3.1..8.7.6.2.3.......8";
+		String gridString = "..7.48...8......1....2.6.3...3.6.87..2.....6..18.2.5...8.7.2....9......1...39.6..";
 
 		for (int i = 0; i < 9; i++) {
 			for (int j = 0; j < 9; j++) {

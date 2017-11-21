@@ -14,23 +14,25 @@ import com.andreas.heimann.sudoku.items.SudokuGrid;
 public class GridSolver {
 
 	public static boolean solveGrid(SudokuGrid sudokuGrid, Difficulty difficulty) {
-		List<Cell> emptyCellsStart = getEmptyCells(sudokuGrid);
-		List<Cell> emptyCellsCurrent = new ArrayList<>();
+		List<Cell> emptyCells = getEmptyCells(sudokuGrid);
+		int entriesCountStart = getEntriesCount(emptyCells);
+		int entriesCountEnd = 0;
 
-		while (emptyCellsStart.size() != emptyCellsCurrent.size()
-				&& emptyCellsStart.size() != 0) {
-			boolean madeEntries = makeEntries(emptyCellsStart);
+		while (entriesCountStart != 0 && entriesCountStart != entriesCountEnd) {
+			int currentEntries = getEntriesCount(emptyCells);
+			boolean removedEntries = entriesCountStart != currentEntries;
 
 			// Try Easy
-			checkExcludeEntries(sudokuGrid, emptyCellsStart);
-			madeEntries = makeEntries(emptyCellsStart);
+			checkExcludeEntries(sudokuGrid, emptyCells);
+			currentEntries = getEntriesCount(emptyCells);
+			removedEntries = entriesCountStart != currentEntries;
 
 			// Try Medium
-			if (!madeEntries && difficulty.ordinal() > 0) {
-				checkUniqueEntry(sudokuGrid, emptyCellsStart);
-				madeEntries = makeEntries(emptyCellsStart);
-				if (madeEntries) {
-					System.out.println("USED UNIQUEENTRY");
+			if (!removedEntries && difficulty.ordinal() > 0) {
+				checkUniqueEntry(sudokuGrid, emptyCells);
+				currentEntries = getEntriesCount(emptyCells);
+				removedEntries = entriesCountStart != currentEntries;
+				if (removedEntries) {
 					if (sudokuGrid.getDifficulty().ordinal() < 1) {
 						sudokuGrid.setDifficulty(Difficulty.TWO);
 					}
@@ -38,11 +40,11 @@ public class GridSolver {
 			}
 
 			// Try Hard 1
-			if (!madeEntries && difficulty.ordinal() > 1) {
-				checkUniqueRowColumn(sudokuGrid, emptyCellsStart);
-				madeEntries = makeEntries(emptyCellsStart);
-				if (madeEntries) {
-					System.out.println("USED UNIQUEROWCOL");
+			if (!removedEntries && difficulty.ordinal() > 1) {
+				checkUniqueRowColumn(sudokuGrid, emptyCells);
+				currentEntries = getEntriesCount(emptyCells);
+				removedEntries = entriesCountStart != currentEntries;
+				if (removedEntries) {
 					if (sudokuGrid.getDifficulty().ordinal() < 2) {
 						sudokuGrid.setDifficulty(Difficulty.THREE);
 					}
@@ -50,11 +52,11 @@ public class GridSolver {
 			}
 
 			// Try Hard 2
-			if (!madeEntries && difficulty.ordinal() > 2) {
-				checkEntryCombinations(sudokuGrid, emptyCellsStart);
-				madeEntries = makeEntries(emptyCellsStart);
-				if (madeEntries) {
-					System.out.println("USED ENTRYCOMBINATION");
+			if (!removedEntries && difficulty.ordinal() > 2) {
+				checkEntryCombinations(sudokuGrid, emptyCells);
+				currentEntries = getEntriesCount(emptyCells);
+				removedEntries = entriesCountStart != currentEntries;
+				if (removedEntries) {
 					if (sudokuGrid.getDifficulty().ordinal() < 3) {
 						sudokuGrid.setDifficulty(Difficulty.FOUR);
 					}
@@ -62,13 +64,13 @@ public class GridSolver {
 			}
 
 			// Try Small Fishes
-			if (!madeEntries && difficulty.ordinal() > 3) {
-				checkSmallFish(sudokuGrid, emptyCellsStart, 2);
-				checkSmallFish(sudokuGrid, emptyCellsStart, 3);
-				checkSmallFish(sudokuGrid, emptyCellsStart, 4);
-				madeEntries = makeEntries(emptyCellsStart);
-				if (madeEntries) {
-					System.out.println("USED FISH");
+			if (!removedEntries && difficulty.ordinal() > 3) {
+				checkSmallFish(sudokuGrid, emptyCells, 2);
+				checkSmallFish(sudokuGrid, emptyCells, 3);
+				checkSmallFish(sudokuGrid, emptyCells, 4);
+				currentEntries = getEntriesCount(emptyCells);
+				removedEntries = entriesCountStart != currentEntries;
+				if (removedEntries) {
 					if (sudokuGrid.getDifficulty().ordinal() < 4) {
 						sudokuGrid.setDifficulty(Difficulty.FIVE);
 					}
@@ -76,11 +78,11 @@ public class GridSolver {
 			}
 
 			// Try Remote Pairs
-			if (!madeEntries && difficulty.ordinal() > 4) {
-				checkRemotePairs(sudokuGrid, emptyCellsStart);
-				madeEntries = makeEntries(emptyCellsStart);
-				if (madeEntries) {
-					System.out.println("USED REMOTE PAIRS");
+			if (!removedEntries && difficulty.ordinal() > 4) {
+				checkRemotePairs(sudokuGrid, emptyCells);
+				currentEntries = getEntriesCount(emptyCells);
+				removedEntries = entriesCountStart != currentEntries;
+				if (removedEntries) {
 					if (sudokuGrid.getDifficulty().ordinal() < 5) {
 						sudokuGrid.setDifficulty(Difficulty.SIX);
 					}
@@ -88,22 +90,24 @@ public class GridSolver {
 			}
 
 			// Try Unique Rectangle
-			if (!madeEntries && difficulty.ordinal() > 4) {
-				checkUniqueRectangle(sudokuGrid, emptyCellsStart);
-				madeEntries = makeEntries(emptyCellsStart);
-				if (madeEntries) {
-					System.out.println("USED UNIQUE RECTANGLES");
+			if (!removedEntries && difficulty.ordinal() > 4) {
+				checkUniqueRectangle(sudokuGrid, emptyCells);
+				currentEntries = getEntriesCount(emptyCells);
+				removedEntries = entriesCountStart != currentEntries;
+				if (removedEntries) {
 					if (sudokuGrid.getDifficulty().ordinal() < 5) {
 						sudokuGrid.setDifficulty(Difficulty.SIX);
 					}
 				}
 			}
 
-			emptyCellsCurrent = emptyCellsStart;
-			emptyCellsStart = getEmptyCells(sudokuGrid);
+			makeEntries(emptyCells);
+			emptyCells = getEmptyCells(sudokuGrid);
+			entriesCountEnd = entriesCountStart;
+			entriesCountStart = getEntriesCount(emptyCells);
 		}
 
-		return emptyCellsStart.size() == 0;
+		return emptyCells.size() == 0;
 	}
 
 	public static void checkExcludeEntries(SudokuGrid sudokuGrid,
@@ -825,5 +829,15 @@ public class GridSolver {
 		}
 
 		return false;
+	}
+
+	public static int getEntriesCount(List<Cell> cells) {
+		int entriesCount = 0;
+
+		for (Cell aCell : cells) {
+			entriesCount += aCell.getPossibleEntries().size();
+		}
+
+		return entriesCount;
 	}
 }
