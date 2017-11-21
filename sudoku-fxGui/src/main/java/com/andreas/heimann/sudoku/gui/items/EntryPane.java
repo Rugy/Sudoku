@@ -1,4 +1,4 @@
-package com.andreas.heimann.sudoku.gui;
+package com.andreas.heimann.sudoku.gui.items;
 
 import java.util.Set;
 

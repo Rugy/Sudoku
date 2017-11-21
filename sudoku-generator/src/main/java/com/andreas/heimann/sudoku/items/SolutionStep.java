@@ -6,7 +6,7 @@ import java.util.Set;
 public class SolutionStep {
 
 	private Cell cell;
-	private StepType stepType;
+	private RuleType stepType;
 	private String description;
 	private int entry;
 	private int uniqueField;
@@ -14,14 +14,12 @@ public class SolutionStep {
 	private Set<Integer> entries;
 	private List<Cell> reason;
 
-	public SolutionStep(Cell cell, StepType stepType, int entry) {
+	public SolutionStep(Cell cell, RuleType stepType, int entry) {
 		this.cell = cell;
 		this.stepType = stepType;
 		this.entry = entry;
 
-		if (stepType == StepType.EXCLUDE_ROW
-				|| stepType == StepType.EXCLUDE_COLUMN
-				|| stepType == StepType.EXCLUDE_SEGMENT) {
+		if (stepType == RuleType.EXCLUDE_ENTRIES) {
 			description = "Number " + entry + " already in "
 					+ stepType.toString().substring(8).toLowerCase()
 					+ ". Removed from Cell(" + cell.getRow() + ","
@@ -29,7 +27,7 @@ public class SolutionStep {
 		}
 	}
 
-	public SolutionStep(Cell cell, StepType stepType, int entry, int uniqueField) {
+	public SolutionStep(Cell cell, RuleType stepType, int entry, int uniqueField) {
 		this.cell = cell;
 		this.stepType = stepType;
 		this.entry = entry;
@@ -37,9 +35,7 @@ public class SolutionStep {
 		String fieldDescription = stepType.toString().substring(7)
 				.toLowerCase();
 
-		if (stepType == StepType.UNIQUE_ROW
-				|| stepType == StepType.UNIQUE_COLUMN
-				|| stepType == StepType.UNIQUE_SEGMENT) {
+		if (stepType == RuleType.UNIQUE_ENTRY) {
 			description = "Number " + entry + " is the only option in "
 					+ fieldDescription + " " + uniqueField
 					+ ". Removed from Cells around Cell(" + cell.getRow() + ","
@@ -47,7 +43,7 @@ public class SolutionStep {
 		}
 	}
 
-	public SolutionStep(Cell cell, StepType stepType, int entry,
+	public SolutionStep(Cell cell, RuleType stepType, int entry,
 			int uniqueField, int segment) {
 		this.cell = cell;
 		this.stepType = stepType;
@@ -57,8 +53,7 @@ public class SolutionStep {
 		String fieldDescription = stepType.toString().substring(14)
 				.toLowerCase();
 
-		if (stepType == StepType.UNIQUE_SEGMENTROW
-				|| stepType == StepType.UNIQUE_SEGMENTCOLUMN) {
+		if (stepType == RuleType.UNIQUE_ROW_COLUMN) {
 			description = "Number " + entry + " has to be in "
 					+ fieldDescription + " " + uniqueField + " in segment "
 					+ segment + ". Removed from Cell in same "
@@ -67,7 +62,7 @@ public class SolutionStep {
 		}
 	}
 
-	public SolutionStep(Cell cell, StepType stepType, int uniqueField,
+	public SolutionStep(Cell cell, RuleType stepType, int uniqueField,
 			Set<Integer> entries, List<Cell> cells) {
 		this.cell = cell;
 		this.stepType = stepType;
@@ -82,9 +77,7 @@ public class SolutionStep {
 					+ aCell.getColumn() + ")");
 		}
 
-		if (stepType == StepType.ENTRYCOMBINATION_ROW
-				|| stepType == StepType.ENTRYCOMBINATION_COLUMN
-				|| stepType == StepType.ENTRYCOMBINATION_SEGMENT) {
+		if (stepType == RuleType.ENTRY_COMBINATION) {
 			description = "Numbers " + entries + " have to be in "
 					+ fieldDescription + " " + uniqueField + " in Cells: "
 					+ cellDescription + ". Removed from Cell(" + cell.getRow()
@@ -106,11 +99,11 @@ public class SolutionStep {
 		this.cell = cell;
 	}
 
-	public StepType getStepType() {
+	public RuleType getStepType() {
 		return stepType;
 	}
 
-	public void setStepType(StepType stepType) {
+	public void setStepType(RuleType stepType) {
 		this.stepType = stepType;
 	}
 

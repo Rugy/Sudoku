@@ -5,11 +5,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.andreas.heimann.sudoku.GridClearer;
 import com.andreas.heimann.sudoku.GridHelper;
 import com.andreas.heimann.sudoku.GridSolver;
 import com.andreas.heimann.sudoku.gui.ViewUpdateListener;
+import com.andreas.heimann.sudoku.gui.items.RuleLabel;
 import com.andreas.heimann.sudoku.items.Cell;
 import com.andreas.heimann.sudoku.items.Difficulty;
+import com.andreas.heimann.sudoku.items.RuleType;
 import com.andreas.heimann.sudoku.items.SudokuGrid;
 
 public class GridGuiController implements GridListener {
@@ -20,12 +23,11 @@ public class GridGuiController implements GridListener {
 
 	public GridGuiController(ViewUpdateListener view) {
 		this.view = view;
-		Difficulty difficulty = Difficulty.ONE;
+		Difficulty difficulty = Difficulty.TWO;
 
 		sudokuGrid = new SudokuGrid();
-		GridHelper.importGrid(sudokuGrid);
-		// GridHelper.generateGrid(sudokuGrid);
-		// GridClearer.clearIncrementally(sudokuGrid, difficulty);
+		GridHelper.generateGrid(sudokuGrid);
+		GridClearer.clearIncrementally(sudokuGrid, difficulty);
 
 		solvedGrid = sudokuGrid.cloneSudokuGrid();
 		GridSolver.solveGrid(solvedGrid, difficulty);
@@ -145,17 +147,31 @@ public class GridGuiController implements GridListener {
 	}
 
 	@Override
-	public void excludeCount() {
-		SudokuGrid copy = sudokuGrid.cloneSudokuGrid();
-		GridSolver.checkExcludeEntries(copy, GridSolver.getEmptyCells(copy));
-		int excludes = 0;
+	public void makeUniqueEntries() {
+		List<Cell> emptyCells = sudokuGrid.getListGrid();
 
-		for (int i = 0; i < sudokuGrid.getListGrid().size(); i++) {
-			excludes += sudokuGrid.getListGrid().get(i).getPossibleEntries()
-					.size();
-			excludes -= copy.getListGrid().get(i).getPossibleEntries().size();
+		for (Cell aCell : emptyCells) {
+			if (aCell.getPossibleEntries().size() == 1) {
+				aCell.setNumber((int) aCell.getPossibleEntries().toArray()[0]);
+			}
 		}
 
-		view.updateExcludes(excludes);
+		view.updateGrid();
+	}
+
+	@Override
+	public void getRuleExclusions(List<RuleLabel> ruleLabels) {
+
+		for (int i = 0; i < ruleLabels.size(); i++) {
+			int entriesCount = 0;
+			RuleType ruleType = ruleLabels.get(i).getRuleType();
+
+			SudokuGrid copyGrid = sudokuGrid.cloneSudokuGrid();
+			GridSolver.applyRule(copyGrid, ruleType);
+
+			entriesCount = sudokuGrid.getEntriesCount()
+					- copyGrid.getEntriesCount();
+			view.updateRuleLabels(entriesCount, ruleType);
+		}
 	}
 }

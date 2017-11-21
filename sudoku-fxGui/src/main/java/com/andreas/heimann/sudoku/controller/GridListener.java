@@ -2,6 +2,7 @@ package com.andreas.heimann.sudoku.controller;
 
 import java.util.List;
 
+import com.andreas.heimann.sudoku.gui.items.RuleLabel;
 import com.andreas.heimann.sudoku.items.Cell;
 
 public interface GridListener {
@@ -33,5 +34,7 @@ public interface GridListener {
 
 	public void solveGrid();
 
-	public void excludeCount();
+	public void makeUniqueEntries();
+
+	public void getRuleExclusions(List<RuleLabel> ruleLabels);
 }

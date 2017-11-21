@@ -2,6 +2,8 @@ package com.andreas.heimann.sudoku.gui;
 
 import java.util.Set;
 
+import com.andreas.heimann.sudoku.items.RuleType;
+
 public interface ViewUpdateListener {
 	public void updateGrid();
 
@@ -11,5 +13,5 @@ public interface ViewUpdateListener {
 
 	public void showWrongEntry(int cellId);
 
-	public void updateExcludes(int count);
+	public void updateRuleLabels(int entryCount, RuleType ruleType);
 }

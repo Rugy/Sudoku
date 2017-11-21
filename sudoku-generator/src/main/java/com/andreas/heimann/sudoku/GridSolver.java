@@ -7,30 +7,30 @@ import java.util.Set;
 
 import com.andreas.heimann.sudoku.items.Cell;
 import com.andreas.heimann.sudoku.items.Difficulty;
+import com.andreas.heimann.sudoku.items.RuleType;
 import com.andreas.heimann.sudoku.items.SolutionStep;
-import com.andreas.heimann.sudoku.items.StepType;
 import com.andreas.heimann.sudoku.items.SudokuGrid;
 
 public class GridSolver {
 
 	public static boolean solveGrid(SudokuGrid sudokuGrid, Difficulty difficulty) {
 		List<Cell> emptyCells = getEmptyCells(sudokuGrid);
-		int entriesCountStart = getEntriesCount(emptyCells);
+		int entriesCountStart = sudokuGrid.getEntriesCount();
 		int entriesCountEnd = 0;
 
 		while (entriesCountStart != 0 && entriesCountStart != entriesCountEnd) {
-			int currentEntries = getEntriesCount(emptyCells);
+			int currentEntries = sudokuGrid.getEntriesCount();
 			boolean removedEntries = entriesCountStart != currentEntries;
 
 			// Try Easy
 			checkExcludeEntries(sudokuGrid, emptyCells);
-			currentEntries = getEntriesCount(emptyCells);
+			currentEntries = sudokuGrid.getEntriesCount();
 			removedEntries = entriesCountStart != currentEntries;
 
 			// Try Medium
 			if (!removedEntries && difficulty.ordinal() > 0) {
 				checkUniqueEntry(sudokuGrid, emptyCells);
-				currentEntries = getEntriesCount(emptyCells);
+				currentEntries = sudokuGrid.getEntriesCount();
 				removedEntries = entriesCountStart != currentEntries;
 				if (removedEntries) {
 					if (sudokuGrid.getDifficulty().ordinal() < 1) {
@@ -42,7 +42,7 @@ public class GridSolver {
 			// Try Hard 1
 			if (!removedEntries && difficulty.ordinal() > 1) {
 				checkUniqueRowColumn(sudokuGrid, emptyCells);
-				currentEntries = getEntriesCount(emptyCells);
+				currentEntries = sudokuGrid.getEntriesCount();
 				removedEntries = entriesCountStart != currentEntries;
 				if (removedEntries) {
 					if (sudokuGrid.getDifficulty().ordinal() < 2) {
@@ -54,7 +54,7 @@ public class GridSolver {
 			// Try Hard 2
 			if (!removedEntries && difficulty.ordinal() > 2) {
 				checkEntryCombinations(sudokuGrid, emptyCells);
-				currentEntries = getEntriesCount(emptyCells);
+				currentEntries = sudokuGrid.getEntriesCount();
 				removedEntries = entriesCountStart != currentEntries;
 				if (removedEntries) {
 					if (sudokuGrid.getDifficulty().ordinal() < 3) {
@@ -68,7 +68,7 @@ public class GridSolver {
 				checkSmallFish(sudokuGrid, emptyCells, 2);
 				checkSmallFish(sudokuGrid, emptyCells, 3);
 				checkSmallFish(sudokuGrid, emptyCells, 4);
-				currentEntries = getEntriesCount(emptyCells);
+				currentEntries = sudokuGrid.getEntriesCount();
 				removedEntries = entriesCountStart != currentEntries;
 				if (removedEntries) {
 					if (sudokuGrid.getDifficulty().ordinal() < 4) {
@@ -78,25 +78,25 @@ public class GridSolver {
 			}
 
 			// Try Remote Pairs
-			if (!removedEntries && difficulty.ordinal() > 4) {
+			if (!removedEntries && difficulty.ordinal() > 3) {
 				checkRemotePairs(sudokuGrid, emptyCells);
-				currentEntries = getEntriesCount(emptyCells);
+				currentEntries = sudokuGrid.getEntriesCount();
 				removedEntries = entriesCountStart != currentEntries;
 				if (removedEntries) {
-					if (sudokuGrid.getDifficulty().ordinal() < 5) {
-						sudokuGrid.setDifficulty(Difficulty.SIX);
+					if (sudokuGrid.getDifficulty().ordinal() < 4) {
+						sudokuGrid.setDifficulty(Difficulty.FIVE);
 					}
 				}
 			}
 
 			// Try Unique Rectangle
-			if (!removedEntries && difficulty.ordinal() > 4) {
+			if (!removedEntries && difficulty.ordinal() > 3) {
 				checkUniqueRectangle(sudokuGrid, emptyCells);
-				currentEntries = getEntriesCount(emptyCells);
+				currentEntries = sudokuGrid.getEntriesCount();
 				removedEntries = entriesCountStart != currentEntries;
 				if (removedEntries) {
-					if (sudokuGrid.getDifficulty().ordinal() < 5) {
-						sudokuGrid.setDifficulty(Difficulty.SIX);
+					if (sudokuGrid.getDifficulty().ordinal() < 4) {
+						sudokuGrid.setDifficulty(Difficulty.FIVE);
 					}
 				}
 			}
@@ -104,7 +104,7 @@ public class GridSolver {
 			makeEntries(emptyCells);
 			emptyCells = getEmptyCells(sudokuGrid);
 			entriesCountEnd = entriesCountStart;
-			entriesCountStart = getEntriesCount(emptyCells);
+			entriesCountStart = sudokuGrid.getEntriesCount();
 		}
 
 		return emptyCells.size() == 0;
@@ -182,7 +182,7 @@ public class GridSolver {
 					arrayGrid[row][col].getPossibleEntries().add(
 							new Integer(entry));
 					solutionSteps.add(new SolutionStep(aCell,
-							StepType.UNIQUE_ROW, entry, aCell.getRow()));
+							RuleType.UNIQUE_ENTRY, entry, aCell.getRow()));
 				}
 
 				// Unique Columnentry
@@ -198,7 +198,7 @@ public class GridSolver {
 					arrayGrid[row][col].getPossibleEntries().add(
 							new Integer(entry));
 					solutionSteps.add(new SolutionStep(aCell,
-							StepType.UNIQUE_COLUMN, entry, aCell.getColumn()));
+							RuleType.UNIQUE_ENTRY, entry, aCell.getColumn()));
 				}
 
 				// Unique Blockentry
@@ -214,10 +214,8 @@ public class GridSolver {
 					arrayGrid[row][col].getPossibleEntries().clear();
 					arrayGrid[row][col].getPossibleEntries().add(
 							new Integer(entry));
-					solutionSteps
-							.add(new SolutionStep(aCell,
-									StepType.UNIQUE_SEGMENT, entry, aCell
-											.getSegment()));
+					solutionSteps.add(new SolutionStep(aCell,
+							RuleType.UNIQUE_ENTRY, entry, aCell.getSegment()));
 				}
 			}
 		}
@@ -255,7 +253,7 @@ public class GridSolver {
 								&& aCell.getSegment() != segment) {
 							aCell.deletePossibleEntry(anEntry);
 							solutionSteps.add(new SolutionStep(aCell,
-									StepType.UNIQUE_SEGMENTROW, anEntry, row,
+									RuleType.UNIQUE_ROW_COLUMN, anEntry, row,
 									segment));
 						}
 					}
@@ -312,15 +310,15 @@ public class GridSolver {
 
 			if (emptyCellsInRow.size() > 1) {
 				excludeEntryCombinations(sudokuGrid, emptyCellsInRow,
-						solutionSteps, StepType.ENTRYCOMBINATION_ROW);
+						solutionSteps, RuleType.ENTRY_COMBINATION);
 			}
 			if (emptyCellsInColumn.size() > 1) {
 				excludeEntryCombinations(sudokuGrid, emptyCellsInColumn,
-						solutionSteps, StepType.ENTRYCOMBINATION_COLUMN);
+						solutionSteps, RuleType.ENTRY_COMBINATION);
 			}
 			if (emptyCellsInSegment.size() > 1) {
 				excludeEntryCombinations(sudokuGrid, emptyCellsInSegment,
-						solutionSteps, StepType.ENTRYCOMBINATION_SEGMENT);
+						solutionSteps, RuleType.ENTRY_COMBINATION);
 			}
 
 			emptyCellsInRow.clear();
@@ -332,7 +330,7 @@ public class GridSolver {
 
 	private static void excludeEntryCombinations(SudokuGrid sudokuGrid,
 			List<Cell> emptyCells, List<SolutionStep> solutionSteps,
-			StepType stepType) {
+			RuleType stepType) {
 		List<Integer> emptyCellsId = new ArrayList<>();
 		for (Cell aCell : emptyCells) {
 			emptyCellsId.add(aCell.getGridNumber());
@@ -357,20 +355,20 @@ public class GridSolver {
 
 				for (Cell aCell : emptyCells) {
 					int uniqueField = 0;
-					if (stepType == StepType.ENTRYCOMBINATION_ROW) {
+					if (stepType == RuleType.ENTRY_COMBINATION) {
 						uniqueField = aCell.getRow();
 					}
-					if (stepType == StepType.ENTRYCOMBINATION_COLUMN) {
+					if (stepType == RuleType.ENTRY_COMBINATION) {
 						uniqueField = aCell.getColumn();
 					}
-					if (stepType == StepType.ENTRYCOMBINATION_SEGMENT) {
+					if (stepType == RuleType.ENTRY_COMBINATION) {
 						uniqueField = aCell.getSegment();
 					}
 
 					aCell.getPossibleEntries().removeAll(
 							possibleEntriesCombination);
 					solutionSteps.add(new SolutionStep(aCell,
-							StepType.ENTRYCOMBINATION_COLUMN, uniqueField,
+							RuleType.ENTRY_COMBINATION, uniqueField,
 							possibleEntriesCombination, aCellList));
 				}
 				break;
@@ -831,13 +829,25 @@ public class GridSolver {
 		return false;
 	}
 
-	public static int getEntriesCount(List<Cell> cells) {
-		int entriesCount = 0;
+	public static void applyRule(SudokuGrid sudokuGrid, RuleType ruleType) {
+		List<Cell> emptyCells = getEmptyCells(sudokuGrid);
 
-		for (Cell aCell : cells) {
-			entriesCount += aCell.getPossibleEntries().size();
+		if (ruleType == RuleType.EXCLUDE_ENTRIES) {
+			checkExcludeEntries(sudokuGrid, emptyCells);
+		} else if (ruleType == RuleType.UNIQUE_ENTRY) {
+			checkUniqueEntry(sudokuGrid, emptyCells);
+		} else if (ruleType == RuleType.UNIQUE_ROW_COLUMN) {
+			checkUniqueRowColumn(sudokuGrid, emptyCells);
+		} else if (ruleType == RuleType.ENTRY_COMBINATION) {
+			checkEntryCombinations(sudokuGrid, emptyCells);
+		} else if (ruleType == RuleType.FISH) {
+			checkSmallFish(sudokuGrid, emptyCells, 2);
+			checkSmallFish(sudokuGrid, emptyCells, 3);
+			checkSmallFish(sudokuGrid, emptyCells, 4);
+		} else if (ruleType == RuleType.REMOTE_PAIRS) {
+			checkRemotePairs(sudokuGrid, emptyCells);
+		} else if (ruleType == RuleType.UNIQUE_RECTANGLE) {
+			checkUniqueRectangle(sudokuGrid, emptyCells);
 		}
-
-		return entriesCount;
 	}
 }

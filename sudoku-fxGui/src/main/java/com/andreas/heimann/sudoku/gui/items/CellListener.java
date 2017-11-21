@@ -1,4 +1,4 @@
-package com.andreas.heimann.sudoku.gui;
+package com.andreas.heimann.sudoku.gui.items;
 
 public interface CellListener {
 	public void makeEntry(int number, int cellId);
