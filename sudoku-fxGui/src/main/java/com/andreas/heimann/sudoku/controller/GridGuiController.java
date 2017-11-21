@@ -23,7 +23,7 @@ public class GridGuiController implements GridListener {
 
 	public GridGuiController(ViewUpdateListener view) {
 		this.view = view;
-		Difficulty difficulty = Difficulty.TWO;
+		Difficulty difficulty = Difficulty.FIVE;
 
 		sudokuGrid = new SudokuGrid();
 		GridHelper.generateGrid(sudokuGrid);
@@ -91,51 +91,10 @@ public class GridGuiController implements GridListener {
 	}
 
 	@Override
-	public void checkExcludeEntries() {
+	public void applyRule(RuleType ruleType) {
 		GridSolver.checkExcludeEntries(sudokuGrid,
 				GridSolver.getEmptyCells(sudokuGrid));
-		view.updateGrid();
-	}
-
-	@Override
-	public void checkUniqueEntries() {
-		GridSolver.checkUniqueEntry(sudokuGrid,
-				GridSolver.getEmptyCells(sudokuGrid));
-		view.updateGrid();
-	}
-
-	@Override
-	public void checkUniqueRowColumn() {
-		GridSolver.checkUniqueRowColumn(sudokuGrid,
-				GridSolver.getEmptyCells(sudokuGrid));
-		view.updateGrid();
-	}
-
-	@Override
-	public void checkEntryCombinations() {
-		GridSolver.checkEntryCombinations(sudokuGrid,
-				GridSolver.getEmptyCells(sudokuGrid));
-		view.updateGrid();
-	}
-
-	@Override
-	public void checkFish(int size) {
-		GridSolver.checkSmallFish(sudokuGrid,
-				GridSolver.getEmptyCells(sudokuGrid), size);
-		view.updateGrid();
-	}
-
-	@Override
-	public void checkRemotePairs() {
-		GridSolver.checkRemotePairs(sudokuGrid,
-				GridSolver.getEmptyCells(sudokuGrid));
-		view.updateGrid();
-	}
-
-	@Override
-	public void checkUniqueRectangle() {
-		GridSolver.checkUniqueRectangle(sudokuGrid,
-				GridSolver.getEmptyCells(sudokuGrid));
+		GridSolver.applyRule(sudokuGrid, ruleType);
 		view.updateGrid();
 	}
 

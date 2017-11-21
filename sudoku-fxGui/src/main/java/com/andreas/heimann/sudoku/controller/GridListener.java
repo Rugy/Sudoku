@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.andreas.heimann.sudoku.gui.items.RuleLabel;
 import com.andreas.heimann.sudoku.items.Cell;
+import com.andreas.heimann.sudoku.items.RuleType;
 
 public interface GridListener {
 	public List<Cell> getListGridCopy();
@@ -18,19 +19,7 @@ public interface GridListener {
 
 	public void addPossibleEntry(int number, int cellId);
 
-	public void checkExcludeEntries();
-
-	public void checkUniqueEntries();
-
-	public void checkUniqueRowColumn();
-
-	public void checkEntryCombinations();
-
-	public void checkFish(int size);
-
-	public void checkRemotePairs();
-
-	public void checkUniqueRectangle();
+	public void applyRule(RuleType ruleType);
 
 	public void solveGrid();
 
