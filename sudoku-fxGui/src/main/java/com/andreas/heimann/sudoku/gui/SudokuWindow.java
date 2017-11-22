@@ -6,11 +6,14 @@ import java.util.Set;
 
 import javafx.application.Application;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
@@ -50,6 +53,8 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 	private CheckBox showWrong;
 	private CheckBox showExclusions;
 	private int size = 60;
+	private int markedCellId;
+	private List<Integer> markingReasonIds = new ArrayList<>();
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
@@ -150,20 +155,18 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 						continue;
 					}
 					if (aPane.getRow() == entryPane.getRow()) {
-						aPane.setStyle("-fx-background-color: "
-								+ EntryPane.COLOR_HOVER_ADJACENT + ";");
-					}
-					if (aPane.getColumn() == entryPane.getColumn()) {
-						aPane.setStyle("-fx-background-color: "
-								+ EntryPane.COLOR_HOVER_ADJACENT + ";");
-					}
-					if (aPane.getSegment() == entryPane.getSegment()) {
-						aPane.setStyle("-fx-background-color: "
-								+ EntryPane.COLOR_HOVER_ADJACENT + ";");
+						aPane.getStyleClass().add("adjacent-hover");
+					} else if (aPane.getColumn() == entryPane.getColumn()) {
+						aPane.getStyleClass().add("adjacent-hover");
+					} else if (aPane.getSegment() == entryPane.getSegment()) {
+						aPane.getStyleClass().add("adjacent-hover");
 					}
 				}
-				entryPane.setStyle("-fx-background-color: "
-						+ EntryPane.COLOR_HOVER + ";");
+				if (entryPane.getChildren().size() == 1) {
+					entryPane.getChildren().get(0).getStyleClass()
+							.add("hover-text");
+				}
+				entryPane.getStyleClass().add("hover");
 			});
 			entryPane.setOnMouseExited(e -> {
 				for (EntryPane aPane : cells) {
@@ -171,20 +174,18 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 						continue;
 					}
 					if (aPane.getRow() == entryPane.getRow()) {
-						aPane.setStyle("-fx-background-color: "
-								+ EntryPane.COLOR_NEUTRAL + ";");
-					}
-					if (aPane.getColumn() == entryPane.getColumn()) {
-						aPane.setStyle("-fx-background-color: "
-								+ EntryPane.COLOR_NEUTRAL + ";");
-					}
-					if (aPane.getSegment() == entryPane.getSegment()) {
-						aPane.setStyle("-fx-background-color: "
-								+ EntryPane.COLOR_NEUTRAL + ";");
+						aPane.getStyleClass().remove("adjacent-hover");
+					} else if (aPane.getColumn() == entryPane.getColumn()) {
+						aPane.getStyleClass().remove("adjacent-hover");
+					} else if (aPane.getSegment() == entryPane.getSegment()) {
+						aPane.getStyleClass().remove("adjacent-hover");
 					}
 				}
-				entryPane.setStyle("-fx-background-color: "
-						+ EntryPane.COLOR_NEUTRAL + ";");
+				if (entryPane.getChildren().size() == 1) {
+					entryPane.getChildren().get(0).getStyleClass()
+							.remove("hover-text");
+				}
+				entryPane.getStyleClass().remove("hover");
 			});
 		}
 	}
@@ -196,7 +197,7 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 		excludeEntriesLabel.setId("excludeEntriesLabel");
 		excludeEntriesLabel.getStyleClass().add("rule-label");
 		excludeEntriesLabel.setOnMouseClicked(e -> {
-			gridListener.applyRule(ruleType);
+			SudokuWindow.this.addMouseClicks(excludeEntriesLabel, ruleType, e);
 		});
 		Tooltip tooltip = new Tooltip("Exclude Entries");
 		excludeEntriesLabel.setTooltip(tooltip);
@@ -212,7 +213,7 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 		uniqueEntriesLabel.setId("uniqueEntriesLabel");
 		uniqueEntriesLabel.getStyleClass().add("rule-label");
 		uniqueEntriesLabel.setOnMouseClicked(e -> {
-			gridListener.applyRule(ruleType);
+			SudokuWindow.this.addMouseClicks(uniqueEntriesLabel, ruleType, e);
 		});
 		Tooltip tooltip = new Tooltip("Unique Entries");
 		uniqueEntriesLabel.setTooltip(tooltip);
@@ -227,9 +228,11 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 		uniqueRowColumnLabel = new RuleLabel("-", ruleType);
 		uniqueRowColumnLabel.setId("uniqueRowColumnLabel");
 		uniqueRowColumnLabel.getStyleClass().add("rule-label");
-		uniqueRowColumnLabel.setOnMouseClicked(e -> {
-			gridListener.applyRule(ruleType);
-		});
+		uniqueRowColumnLabel
+				.setOnMouseClicked(e -> {
+					SudokuWindow.this.addMouseClicks(uniqueRowColumnLabel,
+							ruleType, e);
+				});
 		Tooltip tooltip = new Tooltip("Unique Row or Column");
 		uniqueRowColumnLabel.setTooltip(tooltip);
 
@@ -244,7 +247,8 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 		entryCombinationLabel.setId("entryCombinationLabel");
 		entryCombinationLabel.getStyleClass().add("rule-label");
 		entryCombinationLabel.setOnMouseClicked(e -> {
-			gridListener.applyRule(ruleType);
+			SudokuWindow.this
+					.addMouseClicks(entryCombinationLabel, ruleType, e);
 		});
 		Tooltip tooltip = new Tooltip("Entry Combinations");
 		entryCombinationLabel.setTooltip(tooltip);
@@ -260,7 +264,7 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 		xWingLabel.setId("xWingLabel");
 		xWingLabel.getStyleClass().add("rule-label");
 		xWingLabel.setOnMouseClicked(e -> {
-			gridListener.applyRule(ruleType);
+			SudokuWindow.this.addMouseClicks(xWingLabel, ruleType, e);
 		});
 		Tooltip tooltip = new Tooltip("X-Wing");
 		xWingLabel.setTooltip(tooltip);
@@ -276,7 +280,7 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 		swordFishLabel.setId("swordFishLabel");
 		swordFishLabel.getStyleClass().add("rule-label");
 		swordFishLabel.setOnMouseClicked(e -> {
-			gridListener.applyRule(ruleType);
+			SudokuWindow.this.addMouseClicks(swordFishLabel, ruleType, e);
 		});
 		Tooltip tooltip = new Tooltip("Swordfish");
 		swordFishLabel.setTooltip(tooltip);
@@ -292,7 +296,7 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 		jellyFishLabel.setId("jellyFishLabel");
 		jellyFishLabel.getStyleClass().add("rule-label");
 		jellyFishLabel.setOnMouseClicked(e -> {
-			gridListener.applyRule(ruleType);
+			SudokuWindow.this.addMouseClicks(jellyFishLabel, ruleType, e);
 		});
 		Tooltip tooltip = new Tooltip("Jellyfish");
 		jellyFishLabel.setTooltip(tooltip);
@@ -308,7 +312,7 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 		remotePairsLabel.setId("remotePairsLabel");
 		remotePairsLabel.getStyleClass().add("rule-label");
 		remotePairsLabel.setOnMouseClicked(e -> {
-			gridListener.applyRule(ruleType);
+			SudokuWindow.this.addMouseClicks(remotePairsLabel, ruleType, e);
 		});
 		Tooltip tooltip = new Tooltip("Remote Pairs");
 		remotePairsLabel.setTooltip(tooltip);
@@ -323,14 +327,33 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 		uniqueRectangleLabel = new RuleLabel("-", ruleType);
 		uniqueRectangleLabel.setId("uniqueRectangleLabel");
 		uniqueRectangleLabel.getStyleClass().add("rule-label");
-		uniqueRectangleLabel.setOnMouseClicked(e -> {
-			gridListener.applyRule(ruleType);
-		});
+		uniqueRectangleLabel
+				.setOnMouseClicked(e -> {
+					SudokuWindow.this.addMouseClicks(uniqueRectangleLabel,
+							ruleType, e);
+				});
 		Tooltip tooltip = new Tooltip("Unique Rectangle");
 		uniqueRectangleLabel.setTooltip(tooltip);
 
 		ruleLabels.add(uniqueRectangleLabel);
 		rulesGridPane.add(uniqueRectangleLabel, 0, 8);
+	}
+
+	private void addMouseClicks(RuleLabel label, RuleType ruleType, MouseEvent e) {
+		if ("-".equals(label.getText()) || "0".equals(label.getText())) {
+			return;
+		}
+
+		if (label != excludeEntriesLabel
+				&& !"0".equals(excludeEntriesLabel.getText())) {
+			return;
+		}
+
+		if (e.getButton() == MouseButton.PRIMARY) {
+			gridListener.markRuleExclusion(ruleType);
+		} else if (e.getButton() == MouseButton.SECONDARY) {
+			gridListener.applyRule(ruleType);
+		}
 	}
 
 	private void addSolveGridButton() {
@@ -461,6 +484,7 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 		if (showExclusions.isSelected()) {
 			gridListener.getRuleExclusions(ruleLabels);
 		}
+		removeMarkings();
 	}
 
 	@Override
@@ -470,6 +494,7 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 		if (showExclusions.isSelected()) {
 			gridListener.getRuleExclusions(ruleLabels);
 		}
+		removeMarkings();
 	}
 
 	@Override
@@ -486,6 +511,7 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 		if (showExclusions.isSelected()) {
 			gridListener.getRuleExclusions(ruleLabels);
 		}
+		removeMarkings();
 	}
 
 	@Override
@@ -515,5 +541,28 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 	@Override
 	public void removeEntry(int cellId) {
 		gridListener.removeEntry(cellId);
+	}
+
+	@Override
+	public void markRuleExclusion(int cellId, int entry, List<Integer> reasonIds) {
+		removeMarkings();
+
+		for (Integer anId : reasonIds) {
+			cells.get(anId).getStyleClass().add("exclude-reason");
+			markingReasonIds.add(anId);
+		}
+
+		cells.get(cellId).getChildren().get(entry - 1).getStyleClass()
+				.add("exclude-entry");
+		markedCellId = cellId;
+	}
+
+	public void removeMarkings() {
+		for (Integer anId : markingReasonIds) {
+			cells.get(anId).getStyleClass().remove("exclude-reason");
+		}
+		for (Node aLabel : cells.get(markedCellId).getChildren()) {
+			((Label) aLabel).getStyleClass().remove("exclude-entry");
+		}
 	}
 }

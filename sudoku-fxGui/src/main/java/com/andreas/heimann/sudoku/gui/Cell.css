@@ -3,8 +3,29 @@
     -fx-background-color: #F0F8FF;
 }
 
-.label:hover {
-	-fx-text-fill: Blue;
+.entry {
+	-fx-background-color: transparent;
+}
+
+.initial-entry {
+	-fx-text-fill: #181;
+}
+
+.entry-pane {
+	-fx-border-width: 1px;
+	-fx-border-color: black;
+}
+
+.hover {
+	-fx-background-color: #ADD8E6;
+}
+
+.hover-text {
+	-fx-text-fill: blue;
+}
+
+.adjacent-hover {
+	-fx-background-color: #CFFCFC;
 }
 
 .segment {
@@ -19,18 +40,7 @@
 }
 
 .entry-option:hover {
-	-fx-border-color: black;
-	-fx-border-width: 1px;
-	-fx-border-radius: 3px;
-}
-
-.entry {
-	-fx-background-color: transparent;
-}
-
-.entry-pane {
-	-fx-border-width: 1px;
-	-fx-border-color: black;
+	-fx-text-fill: blue;
 }
 
 .button:hover {
@@ -42,13 +52,17 @@
 	-fx-border-color: red;
 }
 
-.initial-entry {
-	-fx-text-fill: #181;
-}
-
 .rule-label {
 	-fx-font-size: 20px;
 	-fx-border-width: 2px;
 	-fx-border-color: grey;
 	-fx-border-radius: 2px;
+}
+
+.exclude-reason {
+	-fx-background-color: #88F;
+}
+
+.exclude-entry {
+	-fx-border-color: #88F;
 }

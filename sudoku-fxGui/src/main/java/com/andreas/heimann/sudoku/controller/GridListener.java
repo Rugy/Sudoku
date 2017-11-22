@@ -26,4 +26,6 @@ public interface GridListener {
 	public void makeUniqueEntries();
 
 	public void getRuleExclusions(List<RuleLabel> ruleLabels);
+
+	public void markRuleExclusion(RuleType ruleType);
 }

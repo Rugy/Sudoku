@@ -13,6 +13,7 @@ import com.andreas.heimann.sudoku.gui.items.RuleLabel;
 import com.andreas.heimann.sudoku.items.Cell;
 import com.andreas.heimann.sudoku.items.Difficulty;
 import com.andreas.heimann.sudoku.items.RuleType;
+import com.andreas.heimann.sudoku.items.SolutionStep;
 import com.andreas.heimann.sudoku.items.SudokuGrid;
 
 public class GridGuiController implements GridListener {
@@ -131,6 +132,26 @@ public class GridGuiController implements GridListener {
 			entriesCount = sudokuGrid.getEntriesCount()
 					- copyGrid.getEntriesCount();
 			view.updateRuleLabels(entriesCount, ruleType);
+		}
+	}
+
+	@Override
+	public void markRuleExclusion(RuleType ruleType) {
+		if (ruleType == RuleType.EXCLUDE_ENTRIES) {
+			SudokuGrid copyGrid = sudokuGrid.cloneSudokuGrid();
+			copyGrid.setSolutionSteps(new ArrayList<>());
+			GridSolver.applyRule(copyGrid, ruleType);
+			if (copyGrid.getSolutionSteps().size() > 1) {
+				SolutionStep step = copyGrid.getSolutionSteps().get(0);
+				int cellId = step.getCell().getGridNumber();
+				List<Integer> reasonIds = new ArrayList<>();
+				for (Cell aCell : copyGrid.getSolutionSteps().get(0)
+						.getReason()) {
+					reasonIds.add(aCell.getGridNumber());
+				}
+
+				view.markRuleExclusion(cellId, step.getEntry(), reasonIds);
+			}
 		}
 	}
 }

@@ -6,7 +6,7 @@ import java.util.Set;
 public class SolutionStep {
 
 	private Cell cell;
-	private RuleType stepType;
+	private RuleType ruleType;
 	private String description;
 	private int entry;
 	private int uniqueField;
@@ -16,7 +16,7 @@ public class SolutionStep {
 
 	public SolutionStep(Cell cell, RuleType stepType, int entry) {
 		this.cell = cell;
-		this.stepType = stepType;
+		this.ruleType = stepType;
 		this.entry = entry;
 
 		if (stepType == RuleType.EXCLUDE_ENTRIES) {
@@ -29,7 +29,7 @@ public class SolutionStep {
 
 	public SolutionStep(Cell cell, RuleType stepType, int entry, int uniqueField) {
 		this.cell = cell;
-		this.stepType = stepType;
+		this.ruleType = stepType;
 		this.entry = entry;
 		this.uniqueField = uniqueField;
 		String fieldDescription = stepType.toString().substring(7)
@@ -46,7 +46,7 @@ public class SolutionStep {
 	public SolutionStep(Cell cell, RuleType stepType, int entry,
 			int uniqueField, int segment) {
 		this.cell = cell;
-		this.stepType = stepType;
+		this.ruleType = stepType;
 		this.entry = entry;
 		this.uniqueField = uniqueField;
 		this.segment = segment;
@@ -65,7 +65,7 @@ public class SolutionStep {
 	public SolutionStep(Cell cell, RuleType stepType, int uniqueField,
 			Set<Integer> entries, List<Cell> cells) {
 		this.cell = cell;
-		this.stepType = stepType;
+		this.ruleType = stepType;
 		this.uniqueField = uniqueField;
 		this.entries = entries;
 		this.reason = cells;
@@ -85,10 +85,12 @@ public class SolutionStep {
 		}
 	}
 
-	public SolutionStep(Cell cell, int entry, List<Cell> reason) {
+	public SolutionStep(Cell cell, int entry, List<Cell> reason,
+			RuleType ruleType) {
 		this.cell = cell;
 		this.entry = entry;
 		this.reason = reason;
+		this.ruleType = ruleType;
 	}
 
 	public Cell getCell() {
@@ -99,12 +101,12 @@ public class SolutionStep {
 		this.cell = cell;
 	}
 
-	public RuleType getStepType() {
-		return stepType;
+	public RuleType getRuleType() {
+		return ruleType;
 	}
 
-	public void setStepType(RuleType stepType) {
-		this.stepType = stepType;
+	public void setRuleType(RuleType ruleType) {
+		this.ruleType = ruleType;
 	}
 
 	public String getDescription() {

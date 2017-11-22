@@ -131,7 +131,7 @@ public class GridSolver {
 						List<Cell> reason = new ArrayList<>();
 						reason.add(arrayGrid[row][i]);
 						solutionSteps.add(new SolutionStep(aCell, rowNumber,
-								reason));
+								reason, RuleType.EXCLUDE_ENTRIES));
 					}
 				}
 				if (colNumber != 0) {
@@ -139,7 +139,7 @@ public class GridSolver {
 						List<Cell> reason = new ArrayList<>();
 						reason.add(arrayGrid[i][col]);
 						solutionSteps.add(new SolutionStep(aCell, colNumber,
-								reason));
+								reason, RuleType.EXCLUDE_ENTRIES));
 					}
 				}
 				if (segNumber != 0) {
@@ -147,7 +147,7 @@ public class GridSolver {
 						List<Cell> reason = new ArrayList<>();
 						reason.add(segmentGrid.get(segment).get(i));
 						solutionSteps.add(new SolutionStep(aCell, segNumber,
-								reason));
+								reason, RuleType.EXCLUDE_ENTRIES));
 					}
 				}
 			}

@@ -134,7 +134,7 @@ public class SudokuGrid {
 			SolutionStep step = this.solutionSteps.get(i);
 
 			Cell cell = step.getCell();
-			RuleType stepType = step.getStepType();
+			RuleType stepType = step.getRuleType();
 			int number = step.getEntry();
 
 			solutionSteps.add(new SolutionStep(cell, stepType, number));
