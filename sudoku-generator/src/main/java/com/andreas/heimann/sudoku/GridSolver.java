@@ -179,10 +179,8 @@ public class GridSolver {
 
 				if (possibleEntries == 1) {
 					List<Cell> reason = new ArrayList<>();
-					for (int j = 0; j < 9; j++) {
-						reason.add(arrayGrid[row][j]);
-					}
-					reason.remove(aCell);
+					reason.add(aCell);
+
 					for (int j = 0; j < aCell.getEntries().size(); j++) {
 						int removedOption = (int) aCell.getEntries().toArray()[j];
 						if (removedOption != entry) {
@@ -206,10 +204,8 @@ public class GridSolver {
 
 				if (possibleEntries == 1) {
 					List<Cell> reason = new ArrayList<>();
-					for (int j = 0; j < 9; j++) {
-						reason.add(arrayGrid[j][col]);
-					}
-					reason.remove(aCell);
+					reason.add(aCell);
+
 					for (int j = 0; j < aCell.getEntries().size(); j++) {
 						int removedOption = (int) aCell.getEntries().toArray()[j];
 						if (removedOption != entry) {
@@ -234,10 +230,8 @@ public class GridSolver {
 
 				if (possibleEntries == 1) {
 					List<Cell> reason = new ArrayList<>();
-					for (int j = 0; j < 9; j++) {
-						reason.add(segmentGrid.get(segment).get(j));
-					}
-					reason.remove(aCell);
+					reason.add(aCell);
+
 					for (int j = 0; j < aCell.getEntries().size(); j++) {
 						int removedOption = (int) aCell.getEntries().toArray()[j];
 						if (removedOption != entry) {
@@ -271,10 +265,12 @@ public class GridSolver {
 
 			for (Integer anEntry : possibleEntries) {
 				Set<Integer> rowsOccured = new HashSet<>();
+				List<Cell> reason = new ArrayList<>();
 
 				for (Cell aCell : emptyCellsInSegment) {
 					if (aCell.getEntries().contains(anEntry)) {
 						rowsOccured.add(aCell.getRow());
+						reason.add(aCell);
 					}
 				}
 
@@ -284,10 +280,11 @@ public class GridSolver {
 					for (Cell aCell : emptyCells) {
 						if (aCell.getRow() == row
 								&& aCell.getSegment() != segment) {
-							aCell.deletePossibleEntry(anEntry);
-							solutionSteps.add(new SolutionStep(aCell,
-									RuleType.UNIQUE_ROW_COLUMN, anEntry, row,
-									segment));
+							if (aCell.deletePossibleEntry(anEntry)) {
+								solutionSteps.add(new SolutionStep(aCell,
+										anEntry, reason,
+										RuleType.UNIQUE_ROW_COLUMN));
+							}
 						}
 					}
 
@@ -296,10 +293,12 @@ public class GridSolver {
 
 			for (Integer anEntry : possibleEntries) {
 				Set<Integer> columnsOccured = new HashSet<>();
+				List<Cell> reason = new ArrayList<>();
 
 				for (Cell aCell : emptyCellsInSegment) {
 					if (aCell.getEntries().contains(anEntry)) {
 						columnsOccured.add(aCell.getColumn());
+						reason.add(aCell);
 					}
 				}
 
@@ -309,7 +308,11 @@ public class GridSolver {
 					for (Cell aCell : emptyCells) {
 						if (aCell.getColumn() == column
 								&& aCell.getSegment() != segment) {
-							aCell.deletePossibleEntry(anEntry);
+							if (aCell.deletePossibleEntry(anEntry)) {
+								solutionSteps.add(new SolutionStep(aCell,
+										anEntry, reason,
+										RuleType.UNIQUE_ROW_COLUMN));
+							}
 						}
 					}
 
@@ -323,7 +326,6 @@ public class GridSolver {
 
 	public static void checkEntryCombinations(SudokuGrid sudokuGrid,
 			List<Cell> emptyCells) {
-		List<SolutionStep> solutionSteps = sudokuGrid.getSolutionSteps();
 		List<Cell> emptyCellsInRow = new ArrayList<>();
 		List<Cell> emptyCellsInColumn = new ArrayList<>();
 		List<Cell> emptyCellsInSegment = new ArrayList<>();
@@ -342,16 +344,13 @@ public class GridSolver {
 			}
 
 			if (emptyCellsInRow.size() > 1) {
-				excludeEntryCombinations(sudokuGrid, emptyCellsInRow,
-						solutionSteps, RuleType.ENTRY_COMBINATION);
+				excludeEntryCombinations(sudokuGrid, emptyCellsInRow);
 			}
 			if (emptyCellsInColumn.size() > 1) {
-				excludeEntryCombinations(sudokuGrid, emptyCellsInColumn,
-						solutionSteps, RuleType.ENTRY_COMBINATION);
+				excludeEntryCombinations(sudokuGrid, emptyCellsInColumn);
 			}
 			if (emptyCellsInSegment.size() > 1) {
-				excludeEntryCombinations(sudokuGrid, emptyCellsInSegment,
-						solutionSteps, RuleType.ENTRY_COMBINATION);
+				excludeEntryCombinations(sudokuGrid, emptyCellsInSegment);
 			}
 
 			emptyCellsInRow.clear();
@@ -362,8 +361,8 @@ public class GridSolver {
 	}
 
 	private static void excludeEntryCombinations(SudokuGrid sudokuGrid,
-			List<Cell> emptyCells, List<SolutionStep> solutionSteps,
-			RuleType stepType) {
+			List<Cell> emptyCells) {
+		List<SolutionStep> solutionSteps = sudokuGrid.getSolutionSteps();
 		List<Integer> emptyCellsId = new ArrayList<>();
 		for (Cell aCell : emptyCells) {
 			emptyCellsId.add(aCell.getGridNumber());
@@ -377,6 +376,7 @@ public class GridSolver {
 
 		for (List<Cell> aCellList : permutation) {
 			Set<Integer> possibleEntriesCombination = new HashSet<>();
+			List<Cell> reason = new ArrayList<>();
 
 			for (Cell aCell : aCellList) {
 				possibleEntriesCombination.addAll(aCell.getEntries());
@@ -384,24 +384,18 @@ public class GridSolver {
 
 			if (aCellList.size() == possibleEntriesCombination.size()
 					&& aCellList.size() != emptyCells.size()) {
+				reason.addAll(aCellList);
 				emptyCells.removeAll(aCellList);
 
 				for (Cell aCell : emptyCells) {
-					int uniqueField = 0;
-					if (stepType == RuleType.ENTRY_COMBINATION) {
-						uniqueField = aCell.getRow();
-					}
-					if (stepType == RuleType.ENTRY_COMBINATION) {
-						uniqueField = aCell.getColumn();
-					}
-					if (stepType == RuleType.ENTRY_COMBINATION) {
-						uniqueField = aCell.getSegment();
+					for (Integer anEntry : aCell.getEntries()) {
+						if (possibleEntriesCombination.contains(anEntry)) {
+							solutionSteps.add(new SolutionStep(aCell, anEntry,
+									reason, RuleType.ENTRY_COMBINATION));
+						}
 					}
 
 					aCell.getEntries().removeAll(possibleEntriesCombination);
-					solutionSteps.add(new SolutionStep(aCell,
-							RuleType.ENTRY_COMBINATION, uniqueField,
-							possibleEntriesCombination, aCellList));
 				}
 				break;
 			}
@@ -460,6 +454,7 @@ public class GridSolver {
 
 	private static void checkXRowRemoval(SudokuGrid sudokuGrid, int entry,
 			List<Cell> xRow, List<Cell> emptyCells, int size) {
+		List<SolutionStep> solutionSteps = sudokuGrid.getSolutionSteps();
 		Set<Integer> affectedRows = new HashSet<>();
 		for (Cell aCell : xRow) {
 			affectedRows.add(aCell.getRow());
@@ -477,11 +472,13 @@ public class GridSolver {
 		for (List<Integer> rowList : rowPerms) {
 			Set<Integer> cols = new HashSet<>();
 			Set<Integer> rows = new HashSet<>(rowList);
+			List<Cell> reason = new ArrayList<>();
 
 			for (Integer row : rowList) {
 				for (Cell aCell : xRow) {
 					if (aCell.getRow() == row) {
 						cols.add(aCell.getColumn());
+						reason.add(aCell);
 					}
 				}
 			}
@@ -494,6 +491,8 @@ public class GridSolver {
 
 					if (inColumn && !inRow && containsEntry) {
 						aCell.getEntries().remove(entry);
+						solutionSteps.add(new SolutionStep(aCell, entry,
+								reason, RuleType.X_WING));
 					}
 				}
 			}
@@ -502,6 +501,7 @@ public class GridSolver {
 
 	private static void checkXColRemoval(SudokuGrid sudokuGrid, int entry,
 			List<Cell> xColumn, List<Cell> emptyCells, int size) {
+		List<SolutionStep> solutionSteps = sudokuGrid.getSolutionSteps();
 		Set<Integer> affectedColumns = new HashSet<>();
 		for (Cell aCell : xColumn) {
 			affectedColumns.add(aCell.getColumn());
@@ -519,11 +519,13 @@ public class GridSolver {
 		for (List<Integer> colList : colPerms) {
 			Set<Integer> cols = new HashSet<>(colList);
 			Set<Integer> rows = new HashSet<>();
+			List<Cell> reason = new ArrayList<>();
 
 			for (Integer col : colList) {
 				for (Cell aCell : xColumn) {
 					if (aCell.getRow() == col) {
 						rows.add(aCell.getRow());
+						reason.add(aCell);
 					}
 				}
 			}
@@ -536,6 +538,8 @@ public class GridSolver {
 
 					if (inRow && !inColumn && containsEntry) {
 						aCell.getEntries().remove(entry);
+						solutionSteps.add(new SolutionStep(aCell, entry,
+								reason, RuleType.X_WING));
 					}
 				}
 			}
@@ -567,20 +571,22 @@ public class GridSolver {
 			}
 
 			for (int i = 0; i < uniquePairs.size(); i++) {
-				searchRemotePairs(uniquePairs, new ArrayList<>(), i, emptyCells);
+				searchRemotePairs(sudokuGrid, uniquePairs, new ArrayList<>(),
+						i, emptyCells);
 			}
 		}
 	}
 
-	private static void searchRemotePairs(List<Cell> pairs,
-			List<Cell> linkedCells, int position, List<Cell> emptyCells) {
+	private static void searchRemotePairs(SudokuGrid sudokuGrid,
+			List<Cell> pairs, List<Cell> linkedCells, int position,
+			List<Cell> emptyCells) {
 		List<Cell> pairsCopy = new ArrayList<>(pairs);
 		int row = pairsCopy.get(position).getRow();
 		int col = pairsCopy.get(position).getColumn();
 		int seg = pairsCopy.get(position).getSegment();
 
 		linkedCells.add(pairsCopy.remove(position));
-		compareRemotePairs(linkedCells, emptyCells);
+		compareRemotePairs(sudokuGrid, linkedCells, emptyCells);
 
 		for (int i = 0; i < pairsCopy.size(); i++) {
 			boolean sameRow = row == pairsCopy.get(i).getRow();
@@ -588,16 +594,20 @@ public class GridSolver {
 			boolean sameSeg = seg == pairsCopy.get(i).getSegment();
 
 			if (sameRow || sameCol || sameSeg) {
-				searchRemotePairs(pairsCopy, linkedCells, i, emptyCells);
+				searchRemotePairs(sudokuGrid, pairsCopy, linkedCells, i,
+						emptyCells);
 			}
 		}
 
 		linkedCells.remove(linkedCells.size() - 1);
 	}
 
-	private static void compareRemotePairs(List<Cell> linkedCells,
-			List<Cell> emptyCells) {
-		if (linkedCells.size() % 2 == 0) {
+	private static void compareRemotePairs(SudokuGrid sudokuGrid,
+			List<Cell> linkedCells, List<Cell> emptyCells) {
+		if (linkedCells.size() % 2 == 0 && linkedCells.size() > 2) {
+			List<Cell> reason = new ArrayList<>(linkedCells);
+			List<SolutionStep> solutionSteps = sudokuGrid.getSolutionSteps();
+
 			Cell cellOne = linkedCells.get(0);
 			Cell cellTwo = linkedCells.get(linkedCells.size() - 1);
 
@@ -614,12 +624,29 @@ public class GridSolver {
 				boolean sameColTwo = aCell.getColumn() == cellTwo.getColumn();
 				boolean sameSegTwo = aCell.getSegment() == cellTwo.getSegment();
 
+				int entryOne = (int) cellOne.getEntries().toArray()[0];
+				int entryTwo = (int) cellOne.getEntries().toArray()[1];
+				boolean hadEntryOne = false;
+				boolean hadEntryTwo = false;
+
 				if (sameRowOne && (sameColTwo || sameSegTwo)) {
-					aCell.getEntries().removeAll(cellOne.getEntries());
+					hadEntryOne |= aCell.getEntries().remove(entryOne);
+					hadEntryTwo |= aCell.getEntries().remove(entryTwo);
 				} else if (sameColOne && (sameRowTwo || sameSegTwo)) {
-					aCell.getEntries().removeAll(cellOne.getEntries());
+					hadEntryOne |= aCell.getEntries().remove(entryOne);
+					hadEntryTwo |= aCell.getEntries().remove(entryTwo);
 				} else if (sameSegOne && (sameRowTwo || sameColTwo)) {
-					aCell.getEntries().removeAll(cellOne.getEntries());
+					hadEntryOne |= aCell.getEntries().remove(entryOne);
+					hadEntryTwo |= aCell.getEntries().remove(entryTwo);
+				}
+
+				if (hadEntryOne) {
+					solutionSteps.add(new SolutionStep(aCell, entryOne, reason,
+							RuleType.REMOTE_PAIRS));
+				}
+				if (hadEntryTwo) {
+					solutionSteps.add(new SolutionStep(aCell, entryTwo, reason,
+							RuleType.REMOTE_PAIRS));
 				}
 			}
 		}
@@ -655,15 +682,15 @@ public class GridSolver {
 				for (int j = i + 1; j < uniquePairs.size(); j++) {
 					Cell cellTwo = uniquePairs.get(j);
 
-					searchRectangle(cellOne, cellTwo, emptyCells);
+					searchRectangle(sudokuGrid, cellOne, cellTwo, emptyCells);
 				}
 			}
 
 		}
 	}
 
-	private static void searchRectangle(Cell cellOne, Cell cellTwo,
-			List<Cell> emptyCells) {
+	private static void searchRectangle(SudokuGrid sudokuGrid, Cell cellOne,
+			Cell cellTwo, List<Cell> emptyCells) {
 		List<Cell> rectangleCells = new ArrayList<>();
 		rectangleCells.add(cellOne);
 		rectangleCells.add(cellTwo);
@@ -721,12 +748,27 @@ public class GridSolver {
 					for (Cell aCell : rectangleCells) {
 						if (aCell.getEntries().size() > 2
 								&& twoEntriesNext == 3) {
-							aCell.getEntries().removeAll(cellOne.getEntries());
+							List<Cell> reason = new ArrayList<>(rectangleCells);
+							int entryOne = (int) cellOne.getEntries().toArray()[0];
+							int entryTwo = (int) cellOne.getEntries().toArray()[1];
+							if (aCell.getEntries().remove(entryOne)) {
+								sudokuGrid.getSolutionSteps().add(
+										new SolutionStep(aCell, entryOne,
+												reason,
+												RuleType.UNIQUE_RECTANGLE));
+							}
+							if (aCell.getEntries().remove(entryTwo)) {
+								sudokuGrid.getSolutionSteps().add(
+										new SolutionStep(aCell, entryTwo,
+												reason,
+												RuleType.UNIQUE_RECTANGLE));
+							}
 						}
 					}
 
 					if (twoEntriesNext == 2 && entries.size() == 3) {
-						removeOutsideRectangle(rectangleCells, emptyCells);
+						removeOutsideRectangle(sudokuGrid, rectangleCells,
+								emptyCells);
 					}
 				}
 
@@ -737,20 +779,27 @@ public class GridSolver {
 		}
 	}
 
-	private static void removeOutsideRectangle(List<Cell> rectangleCells,
-			List<Cell> emptyCells) {
+	private static void removeOutsideRectangle(SudokuGrid sudokuGrid,
+			List<Cell> rectangleCells, List<Cell> emptyCells) {
 		Cell cellOne = rectangleCells.get(0);
 		Cell cellThree = rectangleCells.get(2);
 		Cell cellFour = rectangleCells.get(3);
 
+		List<SolutionStep> solutionSteps = sudokuGrid.getSolutionSteps();
+		List<Cell> reason = new ArrayList<>(rectangleCells);
+
 		Set<Integer> removal = new HashSet<>(cellThree.getEntries());
 		removal.removeAll(cellOne.getEntries());
+		int entry = (int) removal.toArray()[0];
 
 		if (cellThree.getRow() == cellFour.getRow()) {
 			for (Cell aCell : emptyCells) {
 				if (aCell.getRow() == cellThree.getRow()
 						&& !rectangleCells.contains(aCell)) {
-					aCell.getEntries().removeAll(removal);
+					if (aCell.getEntries().remove(entry)) {
+						solutionSteps.add(new SolutionStep(aCell, entry,
+								reason, RuleType.UNIQUE_RECTANGLE));
+					}
 				}
 			}
 		}
@@ -759,7 +808,10 @@ public class GridSolver {
 			for (Cell aCell : emptyCells) {
 				if (aCell.getColumn() == cellThree.getColumn()
 						&& !rectangleCells.contains(aCell)) {
-					aCell.getEntries().removeAll(removal);
+					if (aCell.getEntries().remove(entry)) {
+						solutionSteps.add(new SolutionStep(aCell, entry,
+								reason, RuleType.UNIQUE_RECTANGLE));
+					}
 				}
 			}
 		}
@@ -768,7 +820,10 @@ public class GridSolver {
 			for (Cell aCell : emptyCells) {
 				if (aCell.getSegment() == cellThree.getSegment()
 						&& !rectangleCells.contains(aCell)) {
-					aCell.getEntries().removeAll(removal);
+					if (aCell.getEntries().remove(entry)) {
+						solutionSteps.add(new SolutionStep(aCell, entry,
+								reason, RuleType.UNIQUE_RECTANGLE));
+					}
 				}
 			}
 		}

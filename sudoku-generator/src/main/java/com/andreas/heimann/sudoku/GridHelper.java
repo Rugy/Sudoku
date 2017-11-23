@@ -55,8 +55,8 @@ public class GridHelper {
 					getNeighbouringZeroes(segmentGrid.get(segment));
 
 					for (int i = 0; i < 9; i++) {
-						if (segmentGrid.get(segment).get(i)
-								.getEntries().contains(actualEntry)) {
+						if (segmentGrid.get(segment).get(i).getEntries()
+								.contains(actualEntry)) {
 							possibleGrid.get(segment).add(
 									segmentGrid.get(segment).get(i));
 						}
@@ -319,7 +319,7 @@ public class GridHelper {
 
 	public static void importGrid(SudokuGrid sudokuGrid) {
 		Cell[][] arrayGrid = sudokuGrid.getArrayGrid();
-		String gridString = "..7.48...8......1....2.6.3...3.6.87..2.....6..18.2.5...8.7.2....9......1...39.6..";
+		String gridString = "7..1924.8..48537...8964732.9125748366..218974478369512341925687..74861.38..73124.";
 
 		for (int i = 0; i < 9; i++) {
 			for (int j = 0; j < 9; j++) {
@@ -407,8 +407,7 @@ public class GridHelper {
 				if (j % 3 == 0 && j > 2) {
 					System.out.print("| ");
 				}
-				System.out.print(arrayGrid[i][j].getEntries().size()
-						+ " ");
+				System.out.print(arrayGrid[i][j].getEntries().size() + " ");
 			}
 
 			System.out.println();

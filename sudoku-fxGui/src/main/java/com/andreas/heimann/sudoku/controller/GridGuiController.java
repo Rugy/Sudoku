@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.andreas.heimann.sudoku.GridClearer;
 import com.andreas.heimann.sudoku.GridHelper;
 import com.andreas.heimann.sudoku.GridSolver;
 import com.andreas.heimann.sudoku.gui.ViewUpdateListener;
@@ -28,8 +27,7 @@ public class GridGuiController implements GridListener {
 		Difficulty difficulty = Difficulty.FIVE;
 
 		sudokuGrid = new SudokuGrid();
-		GridHelper.generateGrid(sudokuGrid);
-		GridClearer.clearIncrementally(sudokuGrid, difficulty);
+		GridHelper.importGrid(sudokuGrid);
 
 		solvedGrid = sudokuGrid.cloneSudokuGrid();
 		GridSolver.solveGrid(solvedGrid, difficulty);
@@ -145,22 +143,21 @@ public class GridGuiController implements GridListener {
 
 	@Override
 	public void markRuleExclusion(RuleType ruleType) {
-		if (ruleType == RuleType.EXCLUDE_ENTRIES
-				|| ruleType == RuleType.UNIQUE_ENTRY) {
-			SudokuGrid copyGrid = sudokuGrid.cloneSudokuGrid();
-			copyGrid.setSolutionSteps(new ArrayList<>());
-			GridSolver.applyRule(copyGrid, ruleType);
-			if (copyGrid.getSolutionSteps().size() >= 1) {
-				SolutionStep step = copyGrid.getSolutionSteps().get(0);
-				int cellId = step.getCell().getGridNumber();
-				List<Integer> reasonIds = new ArrayList<>();
-				for (Cell aCell : copyGrid.getSolutionSteps().get(0)
-						.getReason()) {
-					reasonIds.add(aCell.getGridNumber());
-				}
+		SudokuGrid copyGrid = sudokuGrid.cloneSudokuGrid();
+		copyGrid.setSolutionSteps(new ArrayList<>());
+		GridSolver.applyRule(copyGrid, ruleType);
 
-				view.markRuleExclusion(cellId, step.getEntry(), reasonIds);
+		if (copyGrid.getSolutionSteps().size() >= 1) {
+			SolutionStep step = copyGrid.getSolutionSteps().get(0);
+			int cellId = step.getCell().getGridNumber();
+			List<Integer> reasonIds = new ArrayList<>();
+
+			for (Cell aCell : copyGrid.getSolutionSteps().get(0).getReason()) {
+				reasonIds.add(aCell.getGridNumber());
 			}
+
+			view.markRuleExclusion(cellId, step.getEntry(), reasonIds);
 		}
 	}
+
 }

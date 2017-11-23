@@ -60,9 +60,10 @@
 }
 
 .exclude-reason {
-	-fx-background-color: #88F;
+	-fx-background-color: #AAF;
 }
 
 .exclude-entry {
-	-fx-border-color: #88F;
+	-fx-border-color: #030;
+	-fx-border-radius: 5px;
 }
