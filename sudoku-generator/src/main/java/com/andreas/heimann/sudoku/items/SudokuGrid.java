@@ -148,7 +148,7 @@ public class SudokuGrid {
 		int entriesCount = 0;
 
 		for (Cell aCell : listGrid) {
-			entriesCount += aCell.getPossibleEntries().size();
+			entriesCount += aCell.getEntries().size();
 		}
 
 		return entriesCount;

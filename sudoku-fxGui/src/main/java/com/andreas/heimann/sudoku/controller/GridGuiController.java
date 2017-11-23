@@ -1,6 +1,7 @@
 package com.andreas.heimann.sudoku.controller;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -70,14 +71,14 @@ public class GridGuiController implements GridListener {
 	public void removeEntry(int cellId) {
 		Cell cell = sudokuGrid.getListGrid().get(cellId);
 		cell.clearCell();
-		view.updateCell(cellId, cell.getPossibleEntries());
+		view.updateCell(cellId, cell.getEntries());
 	}
 
 	@Override
 	public void removePossibleEntry(int number, int cellId) {
 		Cell cell = sudokuGrid.getListGrid().get(cellId);
 		cell.deletePossibleEntry(number);
-		Set<Integer> possibleEntries = new HashSet<>(cell.getPossibleEntries());
+		Set<Integer> possibleEntries = new HashSet<>(cell.getEntries());
 
 		view.updateCell(cellId, possibleEntries);
 	}
@@ -85,8 +86,8 @@ public class GridGuiController implements GridListener {
 	@Override
 	public void addPossibleEntry(int number, int cellId) {
 		Cell cell = sudokuGrid.getListGrid().get(cellId);
-		cell.getPossibleEntries().add(number);
-		Set<Integer> possibleEntries = new HashSet<>(cell.getPossibleEntries());
+		cell.getEntries().add(number);
+		Set<Integer> possibleEntries = new HashSet<>(cell.getEntries());
 
 		view.updateCell(cellId, possibleEntries);
 	}
@@ -111,8 +112,8 @@ public class GridGuiController implements GridListener {
 		List<Cell> emptyCells = sudokuGrid.getListGrid();
 
 		for (Cell aCell : emptyCells) {
-			if (aCell.getPossibleEntries().size() == 1) {
-				aCell.setNumber((int) aCell.getPossibleEntries().toArray()[0]);
+			if (aCell.getEntries().size() == 1) {
+				aCell.setNumber((int) aCell.getEntries().toArray()[0]);
 			}
 		}
 
@@ -120,28 +121,36 @@ public class GridGuiController implements GridListener {
 	}
 
 	@Override
-	public void getRuleExclusions(List<RuleLabel> ruleLabels) {
-
-		for (int i = 0; i < ruleLabels.size(); i++) {
+	public void getRuleExclusions(HashMap<RuleType, RuleLabel> ruleLabels) {
+		for (int i = 0; i < RuleType.values().length; i++) {
 			int entriesCount = 0;
-			RuleType ruleType = ruleLabels.get(i).getRuleType();
+			RuleType ruleType = RuleType.values()[i];
+			boolean isExcludeRule = ruleType == RuleType.EXCLUDE_ENTRIES;
+			boolean allExcluded = ruleLabels.get(RuleType.EXCLUDE_ENTRIES)
+					.getText().equals("0");
 
-			SudokuGrid copyGrid = sudokuGrid.cloneSudokuGrid();
-			GridSolver.applyRule(copyGrid, ruleType);
+			if (isExcludeRule || allExcluded) {
+				SudokuGrid copyGrid = sudokuGrid.cloneSudokuGrid();
+				GridSolver.applyRule(copyGrid, ruleType);
 
-			entriesCount = sudokuGrid.getEntriesCount()
-					- copyGrid.getEntriesCount();
-			view.updateRuleLabels(entriesCount, ruleType);
+				entriesCount = sudokuGrid.getEntriesCount()
+						- copyGrid.getEntriesCount();
+
+				view.updateRuleLabel(String.valueOf(entriesCount), ruleType);
+			} else {
+				view.updateRuleLabel("-", ruleType);
+			}
 		}
 	}
 
 	@Override
 	public void markRuleExclusion(RuleType ruleType) {
-		if (ruleType == RuleType.EXCLUDE_ENTRIES) {
+		if (ruleType == RuleType.EXCLUDE_ENTRIES
+				|| ruleType == RuleType.UNIQUE_ENTRY) {
 			SudokuGrid copyGrid = sudokuGrid.cloneSudokuGrid();
 			copyGrid.setSolutionSteps(new ArrayList<>());
 			GridSolver.applyRule(copyGrid, ruleType);
-			if (copyGrid.getSolutionSteps().size() > 1) {
+			if (copyGrid.getSolutionSteps().size() >= 1) {
 				SolutionStep step = copyGrid.getSolutionSteps().get(0);
 				int cellId = step.getCell().getGridNumber();
 				List<Integer> reasonIds = new ArrayList<>();

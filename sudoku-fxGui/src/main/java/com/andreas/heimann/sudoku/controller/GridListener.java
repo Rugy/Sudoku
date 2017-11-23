@@ -1,5 +1,6 @@
 package com.andreas.heimann.sudoku.controller;
 
+import java.util.HashMap;
 import java.util.List;
 
 import com.andreas.heimann.sudoku.gui.items.RuleLabel;
@@ -25,7 +26,7 @@ public interface GridListener {
 
 	public void makeUniqueEntries();
 
-	public void getRuleExclusions(List<RuleLabel> ruleLabels);
+	public void getRuleExclusions(HashMap<RuleType, RuleLabel> ruleLabels);
 
 	public void markRuleExclusion(RuleType ruleType);
 }

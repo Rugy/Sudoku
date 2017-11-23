@@ -56,7 +56,7 @@ public class GridHelper {
 
 					for (int i = 0; i < 9; i++) {
 						if (segmentGrid.get(segment).get(i)
-								.getPossibleEntries().contains(actualEntry)) {
+								.getEntries().contains(actualEntry)) {
 							possibleGrid.get(segment).add(
 									segmentGrid.get(segment).get(i));
 						}
@@ -407,7 +407,7 @@ public class GridHelper {
 				if (j % 3 == 0 && j > 2) {
 					System.out.print("| ");
 				}
-				System.out.print(arrayGrid[i][j].getPossibleEntries().size()
+				System.out.print(arrayGrid[i][j].getEntries().size()
 						+ " ");
 			}
 

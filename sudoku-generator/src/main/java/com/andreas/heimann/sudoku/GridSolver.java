@@ -166,56 +166,89 @@ public class GridSolver {
 			int col = aCell.getColumn();
 			int segment = aCell.getSegment();
 
-			for (int i = 0; i < aCell.getPossibleEntries().size(); i++) {
-				int entry = (int) aCell.getPossibleEntries().toArray()[i];
+			for (int i = 0; i < aCell.getEntries().size(); i++) {
+				int entry = (int) aCell.getEntries().toArray()[i];
 
 				// Unique Rowentry
 				int possibleEntries = 0;
 				for (int j = 0; j < 9; j++) {
-					if (arrayGrid[row][j].getPossibleEntries().contains(entry)) {
+					if (arrayGrid[row][j].getEntries().contains(entry)) {
 						possibleEntries++;
 					}
 				}
 
 				if (possibleEntries == 1) {
-					arrayGrid[row][col].getPossibleEntries().clear();
-					arrayGrid[row][col].getPossibleEntries().add(
-							new Integer(entry));
-					solutionSteps.add(new SolutionStep(aCell,
-							RuleType.UNIQUE_ENTRY, entry, aCell.getRow()));
+					List<Cell> reason = new ArrayList<>();
+					for (int j = 0; j < 9; j++) {
+						reason.add(arrayGrid[row][j]);
+					}
+					reason.remove(aCell);
+					for (int j = 0; j < aCell.getEntries().size(); j++) {
+						int removedOption = (int) aCell.getEntries().toArray()[j];
+						if (removedOption != entry) {
+							solutionSteps.add(new SolutionStep(aCell,
+									removedOption, reason,
+									RuleType.UNIQUE_ENTRY));
+						}
+					}
+
+					arrayGrid[row][col].getEntries().clear();
+					arrayGrid[row][col].getEntries().add(new Integer(entry));
 				}
 
 				// Unique Columnentry
 				possibleEntries = 0;
 				for (int j = 0; j < 9; j++) {
-					if (arrayGrid[j][col].getPossibleEntries().contains(entry)) {
+					if (arrayGrid[j][col].getEntries().contains(entry)) {
 						possibleEntries++;
 					}
 				}
 
 				if (possibleEntries == 1) {
-					arrayGrid[row][col].getPossibleEntries().clear();
-					arrayGrid[row][col].getPossibleEntries().add(
-							new Integer(entry));
-					solutionSteps.add(new SolutionStep(aCell,
-							RuleType.UNIQUE_ENTRY, entry, aCell.getColumn()));
+					List<Cell> reason = new ArrayList<>();
+					for (int j = 0; j < 9; j++) {
+						reason.add(arrayGrid[j][col]);
+					}
+					reason.remove(aCell);
+					for (int j = 0; j < aCell.getEntries().size(); j++) {
+						int removedOption = (int) aCell.getEntries().toArray()[j];
+						if (removedOption != entry) {
+							solutionSteps.add(new SolutionStep(aCell,
+									removedOption, reason,
+									RuleType.UNIQUE_ENTRY));
+						}
+					}
+
+					arrayGrid[row][col].getEntries().clear();
+					arrayGrid[row][col].getEntries().add(new Integer(entry));
 				}
 
 				// Unique Blockentry
 				possibleEntries = 0;
 				for (int j = 0; j < 9; j++) {
-					if (segmentGrid.get(segment).get(j).getPossibleEntries()
+					if (segmentGrid.get(segment).get(j).getEntries()
 							.contains(entry)) {
 						possibleEntries++;
 					}
 				}
 
 				if (possibleEntries == 1) {
-					arrayGrid[row][col].getPossibleEntries().clear();
-					arrayGrid[row][col].getPossibleEntries().add(
-							new Integer(entry));
-					solutionSteps.add(new SolutionStep(aCell,
-							RuleType.UNIQUE_ENTRY, entry, aCell.getSegment()));
+					List<Cell> reason = new ArrayList<>();
+					for (int j = 0; j < 9; j++) {
+						reason.add(segmentGrid.get(segment).get(j));
+					}
+					reason.remove(aCell);
+					for (int j = 0; j < aCell.getEntries().size(); j++) {
+						int removedOption = (int) aCell.getEntries().toArray()[j];
+						if (removedOption != entry) {
+							solutionSteps.add(new SolutionStep(aCell,
+									removedOption, reason,
+									RuleType.UNIQUE_ENTRY));
+						}
+					}
+
+					arrayGrid[row][col].getEntries().clear();
+					arrayGrid[row][col].getEntries().add(new Integer(entry));
 				}
 			}
 		}
@@ -228,11 +261,11 @@ public class GridSolver {
 		List<SolutionStep> solutionSteps = sudokuGrid.getSolutionSteps();
 		Set<Integer> possibleEntries = new HashSet<>();
 
-		for (int segment = 1; segment <= 9; segment++) {
+		for (int segment = 0; segment < 9; segment++) {
 			for (Cell aCell : emptyCells) {
 				if (aCell.getSegment() == segment) {
 					emptyCellsInSegment.add(aCell);
-					possibleEntries.addAll(aCell.getPossibleEntries());
+					possibleEntries.addAll(aCell.getEntries());
 				}
 			}
 
@@ -240,7 +273,7 @@ public class GridSolver {
 				Set<Integer> rowsOccured = new HashSet<>();
 
 				for (Cell aCell : emptyCellsInSegment) {
-					if (aCell.getPossibleEntries().contains(anEntry)) {
+					if (aCell.getEntries().contains(anEntry)) {
 						rowsOccured.add(aCell.getRow());
 					}
 				}
@@ -265,7 +298,7 @@ public class GridSolver {
 				Set<Integer> columnsOccured = new HashSet<>();
 
 				for (Cell aCell : emptyCellsInSegment) {
-					if (aCell.getPossibleEntries().contains(anEntry)) {
+					if (aCell.getEntries().contains(anEntry)) {
 						columnsOccured.add(aCell.getColumn());
 					}
 				}
@@ -346,7 +379,7 @@ public class GridSolver {
 			Set<Integer> possibleEntriesCombination = new HashSet<>();
 
 			for (Cell aCell : aCellList) {
-				possibleEntriesCombination.addAll(aCell.getPossibleEntries());
+				possibleEntriesCombination.addAll(aCell.getEntries());
 			}
 
 			if (aCellList.size() == possibleEntriesCombination.size()
@@ -365,8 +398,7 @@ public class GridSolver {
 						uniqueField = aCell.getSegment();
 					}
 
-					aCell.getPossibleEntries().removeAll(
-							possibleEntriesCombination);
+					aCell.getEntries().removeAll(possibleEntriesCombination);
 					solutionSteps.add(new SolutionStep(aCell,
 							RuleType.ENTRY_COMBINATION, uniqueField,
 							possibleEntriesCombination, aCellList));
@@ -387,8 +419,7 @@ public class GridSolver {
 
 			for (int i = 0; i < 9; i++) {
 				for (Cell aCell : emptyCells) {
-					boolean hasEntry = aCell.getPossibleEntries().contains(
-							entry);
+					boolean hasEntry = aCell.getEntries().contains(entry);
 
 					if (aCell.getRow() == i && hasEntry) {
 						emptyCellsInRow.add(aCell);
@@ -459,11 +490,10 @@ public class GridSolver {
 				for (Cell aCell : emptyCells) {
 					boolean inColumn = cols.contains(aCell.getColumn());
 					boolean inRow = rows.contains(aCell.getRow());
-					boolean containsEntry = aCell.getPossibleEntries()
-							.contains(entry);
+					boolean containsEntry = aCell.getEntries().contains(entry);
 
 					if (inColumn && !inRow && containsEntry) {
-						aCell.getPossibleEntries().remove(entry);
+						aCell.getEntries().remove(entry);
 					}
 				}
 			}
@@ -502,11 +532,10 @@ public class GridSolver {
 				for (Cell aCell : emptyCells) {
 					boolean inRow = rows.contains(aCell.getRow());
 					boolean inColumn = cols.contains(aCell.getColumn());
-					boolean containsEntry = aCell.getPossibleEntries()
-							.contains(entry);
+					boolean containsEntry = aCell.getEntries().contains(entry);
 
 					if (inRow && !inColumn && containsEntry) {
-						aCell.getPossibleEntries().remove(entry);
+						aCell.getEntries().remove(entry);
 					}
 				}
 			}
@@ -518,7 +547,7 @@ public class GridSolver {
 		List<Cell> pairs = new ArrayList<>();
 
 		for (Cell aCell : emptyCells) {
-			if (aCell.getPossibleEntries().size() == 2) {
+			if (aCell.getEntries().size() == 2) {
 				pairs.add(aCell);
 			}
 		}
@@ -526,10 +555,10 @@ public class GridSolver {
 		while (pairs.size() != 0) {
 			List<Cell> uniquePairs = new ArrayList<>();
 			uniquePairs.add(pairs.remove(0));
-			Set<Integer> entriesOne = uniquePairs.get(0).getPossibleEntries();
+			Set<Integer> entriesOne = uniquePairs.get(0).getEntries();
 
 			for (int i = 0; i < pairs.size(); i++) {
-				Set<Integer> entriesTwo = pairs.get(i).getPossibleEntries();
+				Set<Integer> entriesTwo = pairs.get(i).getEntries();
 
 				if (entriesOne.containsAll(entriesTwo)) {
 					uniquePairs.add(pairs.remove(i));
@@ -586,14 +615,11 @@ public class GridSolver {
 				boolean sameSegTwo = aCell.getSegment() == cellTwo.getSegment();
 
 				if (sameRowOne && (sameColTwo || sameSegTwo)) {
-					aCell.getPossibleEntries().removeAll(
-							cellOne.getPossibleEntries());
+					aCell.getEntries().removeAll(cellOne.getEntries());
 				} else if (sameColOne && (sameRowTwo || sameSegTwo)) {
-					aCell.getPossibleEntries().removeAll(
-							cellOne.getPossibleEntries());
+					aCell.getEntries().removeAll(cellOne.getEntries());
 				} else if (sameSegOne && (sameRowTwo || sameColTwo)) {
-					aCell.getPossibleEntries().removeAll(
-							cellOne.getPossibleEntries());
+					aCell.getEntries().removeAll(cellOne.getEntries());
 				}
 			}
 		}
@@ -604,7 +630,7 @@ public class GridSolver {
 		List<Cell> pairs = new ArrayList<>();
 
 		for (Cell aCell : emptyCells) {
-			if (aCell.getPossibleEntries().size() == 2) {
+			if (aCell.getEntries().size() == 2) {
 				pairs.add(aCell);
 			}
 		}
@@ -612,10 +638,10 @@ public class GridSolver {
 		while (pairs.size() != 0) {
 			List<Cell> uniquePairs = new ArrayList<>();
 			uniquePairs.add(pairs.remove(0));
-			Set<Integer> entriesOne = uniquePairs.get(0).getPossibleEntries();
+			Set<Integer> entriesOne = uniquePairs.get(0).getEntries();
 
 			for (int i = 0; i < pairs.size(); i++) {
-				Set<Integer> entriesTwo = pairs.get(i).getPossibleEntries();
+				Set<Integer> entriesTwo = pairs.get(i).getEntries();
 
 				if (entriesOne.containsAll(entriesTwo)) {
 					uniquePairs.add(pairs.remove(i));
@@ -644,8 +670,8 @@ public class GridSolver {
 
 		for (int i = 0; i < emptyCells.size(); i++) {
 			Cell cellThree = emptyCells.get(i);
-			boolean containsEntries = cellThree.getPossibleEntries()
-					.containsAll(cellOne.getPossibleEntries());
+			boolean containsEntries = cellThree.getEntries().containsAll(
+					cellOne.getEntries());
 			int twoEntries = 2;
 
 			if (!containsEntries || rectangleCells.contains(cellThree)) {
@@ -662,17 +688,17 @@ public class GridSolver {
 				rows.add(aCell.getRow());
 				cols.add(aCell.getColumn());
 				segs.add(aCell.getSegment());
-				entries.addAll(aCell.getPossibleEntries());
+				entries.addAll(aCell.getEntries());
 			}
 
-			if (cellThree.getPossibleEntries().size() == 2) {
+			if (cellThree.getEntries().size() == 2) {
 				twoEntries++;
 			}
 
 			for (int j = i + 1; j < emptyCells.size(); j++) {
 				Cell cellFour = emptyCells.get(j);
-				containsEntries = cellFour.getPossibleEntries().containsAll(
-						cellOne.getPossibleEntries());
+				containsEntries = cellFour.getEntries().containsAll(
+						cellOne.getEntries());
 				int twoEntriesNext = twoEntries;
 
 				if (!containsEntries || rectangleCells.contains(cellFour)) {
@@ -684,19 +710,18 @@ public class GridSolver {
 				rows.add(cellFour.getRow());
 				cols.add(cellFour.getColumn());
 				segs.add(cellFour.getSegment());
-				entries.addAll(cellFour.getPossibleEntries());
+				entries.addAll(cellFour.getEntries());
 
-				if (cellFour.getPossibleEntries().size() == 2) {
+				if (cellFour.getEntries().size() == 2) {
 					twoEntriesNext++;
 				}
 
 				if (rows.size() == 2 && cols.size() == 2 && segs.size() == 2) {
 
 					for (Cell aCell : rectangleCells) {
-						if (aCell.getPossibleEntries().size() > 2
+						if (aCell.getEntries().size() > 2
 								&& twoEntriesNext == 3) {
-							aCell.getPossibleEntries().removeAll(
-									cellOne.getPossibleEntries());
+							aCell.getEntries().removeAll(cellOne.getEntries());
 						}
 					}
 
@@ -718,14 +743,14 @@ public class GridSolver {
 		Cell cellThree = rectangleCells.get(2);
 		Cell cellFour = rectangleCells.get(3);
 
-		Set<Integer> removal = new HashSet<>(cellThree.getPossibleEntries());
-		removal.removeAll(cellOne.getPossibleEntries());
+		Set<Integer> removal = new HashSet<>(cellThree.getEntries());
+		removal.removeAll(cellOne.getEntries());
 
 		if (cellThree.getRow() == cellFour.getRow()) {
 			for (Cell aCell : emptyCells) {
 				if (aCell.getRow() == cellThree.getRow()
 						&& !rectangleCells.contains(aCell)) {
-					aCell.getPossibleEntries().removeAll(removal);
+					aCell.getEntries().removeAll(removal);
 				}
 			}
 		}
@@ -734,7 +759,7 @@ public class GridSolver {
 			for (Cell aCell : emptyCells) {
 				if (aCell.getColumn() == cellThree.getColumn()
 						&& !rectangleCells.contains(aCell)) {
-					aCell.getPossibleEntries().removeAll(removal);
+					aCell.getEntries().removeAll(removal);
 				}
 			}
 		}
@@ -743,7 +768,7 @@ public class GridSolver {
 			for (Cell aCell : emptyCells) {
 				if (aCell.getSegment() == cellThree.getSegment()
 						&& !rectangleCells.contains(aCell)) {
-					aCell.getPossibleEntries().removeAll(removal);
+					aCell.getEntries().removeAll(removal);
 				}
 			}
 		}
@@ -808,8 +833,8 @@ public class GridSolver {
 		boolean madeEntry = false;
 
 		for (Cell aCell : cells) {
-			if (aCell.getPossibleEntries().size() == 1) {
-				Integer entry = (Integer) aCell.getPossibleEntries().toArray()[0];
+			if (aCell.getEntries().size() == 1) {
+				Integer entry = (Integer) aCell.getEntries().toArray()[0];
 				aCell.setNumber(entry);
 				aCell.deletePossibleEntry(entry);
 				madeEntry = true;
@@ -821,7 +846,7 @@ public class GridSolver {
 
 	public static boolean isEntryPossible(List<Cell> cells) {
 		for (Cell aCell : cells) {
-			if (aCell.getPossibleEntries().size() == 1) {
+			if (aCell.getEntries().size() == 1) {
 				return true;
 			}
 		}

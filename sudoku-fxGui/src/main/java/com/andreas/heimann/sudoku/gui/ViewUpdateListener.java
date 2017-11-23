@@ -14,7 +14,7 @@ public interface ViewUpdateListener {
 
 	public void showWrongEntry(int cellId);
 
-	public void updateRuleLabels(int entryCount, RuleType ruleType);
+	public void updateRuleLabel(String entry, RuleType ruleType);
 
 	public void markRuleExclusion(int cellId, int entry, List<Integer> reasonIds);
 }

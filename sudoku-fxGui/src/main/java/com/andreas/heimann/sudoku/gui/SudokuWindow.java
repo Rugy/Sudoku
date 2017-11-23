@@ -1,6 +1,7 @@
 package com.andreas.heimann.sudoku.gui;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -48,7 +49,7 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 	private RuleLabel jellyFishLabel;
 	private RuleLabel remotePairsLabel;
 	private RuleLabel uniqueRectangleLabel;
-	private List<RuleLabel> ruleLabels = new ArrayList<>();
+	private HashMap<RuleType, RuleLabel> ruleLabels = new HashMap<>();
 	private Button makeUniqueEntriesButton;
 	private CheckBox showWrong;
 	private CheckBox showExclusions;
@@ -127,7 +128,7 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 			int row = cell.getRow();
 			int column = cell.getColumn();
 			int segment = cell.getSegment();
-			Set<Integer> possibleEntries = cell.getPossibleEntries();
+			Set<Integer> possibleEntries = cell.getEntries();
 			EntryPane entryPane;
 
 			if (number == 0) {
@@ -202,7 +203,7 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 		Tooltip tooltip = new Tooltip("Exclude Entries");
 		excludeEntriesLabel.setTooltip(tooltip);
 
-		ruleLabels.add(excludeEntriesLabel);
+		ruleLabels.put(ruleType, excludeEntriesLabel);
 		rulesGridPane.add(excludeEntriesLabel, 0, 0);
 	}
 
@@ -218,7 +219,7 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 		Tooltip tooltip = new Tooltip("Unique Entries");
 		uniqueEntriesLabel.setTooltip(tooltip);
 
-		ruleLabels.add(uniqueEntriesLabel);
+		ruleLabels.put(ruleType, uniqueEntriesLabel);
 		rulesGridPane.add(uniqueEntriesLabel, 0, 1);
 	}
 
@@ -236,7 +237,7 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 		Tooltip tooltip = new Tooltip("Unique Row or Column");
 		uniqueRowColumnLabel.setTooltip(tooltip);
 
-		ruleLabels.add(uniqueRowColumnLabel);
+		ruleLabels.put(ruleType, uniqueRowColumnLabel);
 		rulesGridPane.add(uniqueRowColumnLabel, 0, 2);
 	}
 
@@ -253,7 +254,7 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 		Tooltip tooltip = new Tooltip("Entry Combinations");
 		entryCombinationLabel.setTooltip(tooltip);
 
-		ruleLabels.add(entryCombinationLabel);
+		ruleLabels.put(ruleType, entryCombinationLabel);
 		rulesGridPane.add(entryCombinationLabel, 0, 3);
 	}
 
@@ -269,7 +270,7 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 		Tooltip tooltip = new Tooltip("X-Wing");
 		xWingLabel.setTooltip(tooltip);
 
-		ruleLabels.add(xWingLabel);
+		ruleLabels.put(ruleType, xWingLabel);
 		rulesGridPane.add(xWingLabel, 0, 4);
 	}
 
@@ -285,7 +286,7 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 		Tooltip tooltip = new Tooltip("Swordfish");
 		swordFishLabel.setTooltip(tooltip);
 
-		ruleLabels.add(swordFishLabel);
+		ruleLabels.put(ruleType, swordFishLabel);
 		rulesGridPane.add(swordFishLabel, 0, 5);
 	}
 
@@ -301,7 +302,7 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 		Tooltip tooltip = new Tooltip("Jellyfish");
 		jellyFishLabel.setTooltip(tooltip);
 
-		ruleLabels.add(jellyFishLabel);
+		ruleLabels.put(ruleType, jellyFishLabel);
 		rulesGridPane.add(jellyFishLabel, 0, 6);
 	}
 
@@ -317,7 +318,7 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 		Tooltip tooltip = new Tooltip("Remote Pairs");
 		remotePairsLabel.setTooltip(tooltip);
 
-		ruleLabels.add(remotePairsLabel);
+		ruleLabels.put(ruleType, remotePairsLabel);
 		rulesGridPane.add(remotePairsLabel, 0, 7);
 	}
 
@@ -335,7 +336,7 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 		Tooltip tooltip = new Tooltip("Unique Rectangle");
 		uniqueRectangleLabel.setTooltip(tooltip);
 
-		ruleLabels.add(uniqueRectangleLabel);
+		ruleLabels.put(ruleType, uniqueRectangleLabel);
 		rulesGridPane.add(uniqueRectangleLabel, 0, 8);
 	}
 
@@ -440,8 +441,8 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 	}
 
 	private void hideExclusions() {
-		for (RuleLabel aLabel : ruleLabels) {
-			aLabel.setText("-");
+		for (int i = 0; i < RuleType.values().length; i++) {
+			ruleLabels.get(RuleType.values()[i]).setText("-");
 		}
 	}
 
@@ -465,7 +466,7 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 			Cell cell = listGrid.get(i);
 			EntryPane entryPane = cells.get(i);
 			int number = cell.getNumber();
-			Set<Integer> possibleEntries = cell.getPossibleEntries();
+			Set<Integer> possibleEntries = cell.getEntries();
 			int childrenCount = entryPane.getChildren().size();
 
 			if (childrenCount == 1) {
@@ -515,12 +516,8 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 	}
 
 	@Override
-	public void updateRuleLabels(int entryCount, RuleType ruleType) {
-		for (int i = 0; i < ruleLabels.size(); i++) {
-			if (ruleLabels.get(i).getRuleType() == ruleType) {
-				ruleLabels.get(i).setText(String.valueOf(entryCount));
-			}
-		}
+	public void updateRuleLabel(String entry, RuleType ruleType) {
+		ruleLabels.get(ruleType).setText(entry);
 	}
 
 	@Override

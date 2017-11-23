@@ -6,7 +6,7 @@ import java.util.Set;
 public class Cell {
 
 	private int number;
-	private Set<Integer> possibleEntries = new HashSet<>();
+	private Set<Integer> entries = new HashSet<>();
 	private int row;
 	private int column;
 	private int segment;
@@ -30,15 +30,15 @@ public class Cell {
 
 	public void setNumber(int number) {
 		this.number = number;
-		possibleEntries.clear();
+		entries.clear();
 	}
 
-	public Set<Integer> getPossibleEntries() {
-		return possibleEntries;
+	public Set<Integer> getEntries() {
+		return entries;
 	}
 
-	public void setPossibleEntries(Set<Integer> possibleEntries) {
-		this.possibleEntries = possibleEntries;
+	public void setEntries(Set<Integer> entries) {
+		this.entries = entries;
 	}
 
 	public int getRow() {
@@ -84,12 +84,12 @@ public class Cell {
 	public void clearCell() {
 		number = 0;
 		for (int i = 0; i < 9; i++) {
-			possibleEntries.add(new Integer(i + 1));
+			entries.add(new Integer(i + 1));
 		}
 	}
 
 	public boolean deletePossibleEntry(Integer entry) {
-		return possibleEntries.remove(entry);
+		return entries.remove(entry);
 	}
 
 	public Cell copyCell() {
@@ -97,8 +97,8 @@ public class Cell {
 		copiedCell.setAdjacentEmptyCells(adjacentEmptyCells);
 		copiedCell.setGridNumber(gridNumber);
 		copiedCell.setSegment(segment);
-		Set<Integer> entriesCopy = new HashSet<>(possibleEntries);
-		copiedCell.setPossibleEntries(entriesCopy);
+		Set<Integer> entriesCopy = new HashSet<>(entries);
+		copiedCell.setEntries(entriesCopy);
 
 		return copiedCell;
 	}
