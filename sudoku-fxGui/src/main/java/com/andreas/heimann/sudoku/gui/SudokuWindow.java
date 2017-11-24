@@ -81,7 +81,7 @@ public class SudokuWindow extends Application implements ViewUpdateListener,
 		Scene scene = new Scene(windowGridPane);
 		primaryStage.setScene(scene);
 		scene.getStylesheets().add(
-				getClass().getResource("Cell.css").toExternalForm());
+				getClass().getResource("/Cell.css").toExternalForm());
 		primaryStage.show();
 	}
 

@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.andreas.heimann.sudoku.GridClearer;
 import com.andreas.heimann.sudoku.GridHelper;
 import com.andreas.heimann.sudoku.GridSolver;
 import com.andreas.heimann.sudoku.gui.ViewUpdateListener;
@@ -27,7 +28,8 @@ public class GridGuiController implements GridListener {
 		Difficulty difficulty = Difficulty.FIVE;
 
 		sudokuGrid = new SudokuGrid();
-		GridHelper.importGrid(sudokuGrid);
+		GridHelper.generateGrid(sudokuGrid);
+		GridClearer.clearIncrementally(sudokuGrid, difficulty);
 
 		solvedGrid = sudokuGrid.cloneSudokuGrid();
 		GridSolver.solveGrid(solvedGrid, difficulty);
